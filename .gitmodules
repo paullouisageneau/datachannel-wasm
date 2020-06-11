@@ -1,0 +1,3 @@
+[submodule "deps/libdatachannel"]
+	path = deps/libdatachannel
+	url = https://github.com/paullouisageneau/libdatachannel.git
