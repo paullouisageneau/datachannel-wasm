@@ -47,7 +47,7 @@ extern int rtcSendMessage(int dc, const char *buffer, int size);
 extern void rtcSetUserPointer(int i, void *ptr);
 }
 
-namespace net {
+namespace rtc {
 
 using std::nullopt;
 
@@ -201,12 +201,12 @@ bool DataChannel::isClosed(void) const {
 std::string DataChannel::label(void) const {
 		return mLabel; }
 
-} // namespace net
+} // namespace rtc
 
-std::ostream &operator<<(std::ostream &out, const net::Candidate &candidate) {
+std::ostream &operator<<(std::ostream &out, const rtc::Candidate &candidate) {
 	return out << std::string(candidate);
 }
 
-std::ostream &operator<<(std::ostream &out, const net::Description &description) {
+std::ostream &operator<<(std::ostream &out, const rtc::Description &description) {
 	return out << std::string(description);
 }

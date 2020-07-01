@@ -119,7 +119,7 @@ private:
 
 } // namespace rtc
 
-std::ostream &operator<<(std::ostream &out, const Candidate &candidate);
-std::ostream &operator<<(std::ostream &out, const Description &description);
+std::ostream &operator<<(std::ostream &out, const rtc::Candidate &candidate);
+std::ostream &operator<<(std::ostream &out, const rtc::Description &description);
 
 #endif // RTC_WEBRTC_H
