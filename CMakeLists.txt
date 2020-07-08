@@ -49,7 +49,7 @@ else()
 	option(NO_WEBSOCKET "Disable WebSocket support in libdatachannel" OFF)
 	option(NO_EXAMPLES "Disable examples in libdatachannel" ON)
 
-	add_subdirectory(deps/libdatachannel)
-	target_link_libraries(datachannels PUBLIC libdatachannel)
+	add_subdirectory(deps/libdatachannel EXCLUDE_FROM_ALL)
+	target_link_libraries(datachannels PUBLIC datachannel-static)
 endif()
 
