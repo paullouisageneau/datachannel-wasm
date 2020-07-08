@@ -36,11 +36,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		"SHELL:-s TOTAL_MEMORY=256MB"
 		"SHELL:-s DISABLE_EXCEPTION_CATCHING=0")
 
-    target_compile_options(datachannels PRIVATE ${WASM_OPTS})
-    set_target_properties(datachannels PROPERTIES
-    	LINK_OPTIONS
-			--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html
-			${WASM_OPTS})
+    target_compile_options(datachannels PUBLIC ${WASM_OPTS})
+    target_link_options(datachannels PUBLIC ${WASM_OPTS} --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html)
+
 else()
 	target_include_directories(datachannels PUBLIC
 		${CMAKE_CURRENT_SOURCE_DIR}/native)
