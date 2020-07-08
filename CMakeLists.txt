@@ -42,6 +42,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 			--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html
 			${WASM_OPTS})
 else()
+	option(USE_JUICE "Use libjuice instead of libnice in libdatachannel" ON)
+	option(NO_WEBSOCKET "Disable WebSocket support in libdatachannel" OFF)
+	option(NO_EXAMPLES "Disable examples in libdatachannel" ON)
+
 	add_subdirectory(deps/libdatachannel)
 	target_link_libraries(datachannels libdatachannel)
 endif()
