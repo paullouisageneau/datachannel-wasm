@@ -22,21 +22,15 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	target_include_directories(datachannels PUBLIC
 		${CMAKE_CURRENT_SOURCE_DIR}/wasm)
 
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-
 	set(WASM_OPTS
-		-Oz -g0
 		"SHELL:-s WASM=1"
-		"SHELL:-s BINARYEN_METHOD=native-wasm"
-		"SHELL:-s TOTAL_MEMORY=256MB"
-		"SHELL:-s DISABLE_EXCEPTION_CATCHING=0")
+		"SHELL:-s BINARYEN_METHOD=native-wasm")
 
-    target_compile_options(datachannels PUBLIC ${WASM_OPTS})
-    target_link_options(datachannels PUBLIC ${WASM_OPTS}
+	target_compile_options(datachannels PUBLIC ${WASM_OPTS})
+	target_link_options(datachannels PUBLIC ${WASM_OPTS}
 		--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/webrtc.js
 		--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/websocket.js
-		--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js
-		--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html)
+		--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js)
 
 else()
 	target_include_directories(datachannels PUBLIC
