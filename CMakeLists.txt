@@ -30,7 +30,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	target_link_options(datachannels PUBLIC ${WASM_OPTS}
 		"SHELL:--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/webrtc.js"
 		"SHELL:--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/websocket.js"
-		"SHELL:--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js")
+		"SHELL:--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js")
 
 else()
 	target_include_directories(datachannels PUBLIC
