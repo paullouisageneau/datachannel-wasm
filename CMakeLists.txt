@@ -22,11 +22,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	target_include_directories(datachannels PUBLIC
 		${CMAKE_CURRENT_SOURCE_DIR}/wasm)
 
-    em_link_js_library(datachannels
-		${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/webrtc.js
-		${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/websocket.js
-		${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js)
-
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 	set(WASM_OPTS
@@ -37,7 +32,11 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		"SHELL:-s DISABLE_EXCEPTION_CATCHING=0")
 
     target_compile_options(datachannels PUBLIC ${WASM_OPTS})
-    target_link_options(datachannels PUBLIC ${WASM_OPTS} --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html)
+    target_link_options(datachannels PUBLIC ${WASM_OPTS}
+		--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/webrtc.js
+		--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/websocket.js
+		--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js
+		--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html)
 
 else()
 	target_include_directories(datachannels PUBLIC
