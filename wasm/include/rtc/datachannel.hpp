@@ -19,5 +19,39 @@
  *   If not, see <http://www.gnu.org/licenses/>.                         *
  *************************************************************************/
 
-#include <rtc/datachannel.hpp>
-#include <rtc/peerconnection.hpp>
+#ifndef RTC_DATACHANNEL_H
+#define RTC_DATACHANNEL_H
+
+#include "channel.hpp"
+#include "include.hpp"
+
+#include <variant>
+
+namespace rtc {
+
+class DataChannel final : public Channel {
+public:
+	explicit DataChannel(int id);
+	~DataChannel();
+
+	void close() override;
+	void send(const std::variant<binary, string> &data) override;
+
+	bool isOpen() const override;
+	bool isClosed() const override;
+
+	string label() const;
+
+private:
+	int mId;
+	string mLabel;
+	bool mConnected;
+
+	static void OpenCallback(void *ptr);
+	static void ErrorCallback(const char *error, void *ptr);
+	static void MessageCallback(const char *data, int size, void *ptr);
+};
+
+} // namespace rtc
+
+#endif // RTC_DATACHANNEL_H

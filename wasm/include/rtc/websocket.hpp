@@ -19,4 +19,40 @@
  *   If not, see <http://www.gnu.org/licenses/>.                         *
  *************************************************************************/
 
-#include <rtc/websocket.hpp>
+#ifndef RTC_WEBSOCKET_H
+#define RTC_WEBSOCKET_H
+
+#include "channel.hpp"
+#include "include.hpp"
+
+#include <variant>
+
+namespace rtc {
+
+// WebSocket wrapper for emscripten
+class WebSocket final : public Channel {
+public:
+	WebSocket();
+	~WebSocket();
+
+	void open(const string &url);
+	void close() override;
+	void send(const std::variant<binary, string> &data) override;
+
+	bool isOpen() const override;
+	bool isClosed() const override;
+
+private:
+	void triggerOpen() override;
+
+	int mId;
+	bool mConnected;
+
+	static void OpenCallback(void *ptr);
+	static void ErrorCallback(const char *error, void *ptr);
+	static void MessageCallback(const char *data, int size, void *ptr);
+};
+
+} // namespace rtc
+
+#endif // RTC_WEBSOCKET_H

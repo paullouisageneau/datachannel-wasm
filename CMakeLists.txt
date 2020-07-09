@@ -4,23 +4,23 @@ project(datachannels
 	VERSION 0.1.0
 	LANGUAGES CXX)
 
-set(DATACHANNELS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/datachannels.cpp)
-
 if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
-    set(DATACHANNELS_SOURCES ${DATACHANNEL_SOURCES}
-		${CMAKE_CURRENT_SOURCE_DIR}/wasm/channel.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/wasm/webrtc.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/wasm/websocket.cpp)
-endif()
+	set(WASM_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/wasm/src)
+    set(DATACHANNELS_SRC
+		${WASM_SRC_DIR}/channel.cpp
+		${WASM_SRC_DIR}/datachannel.cpp
+		${WASM_SRC_DIR}/peerconnection.cpp
+		${WASM_SRC_DIR}/websocket.cpp)
 
-add_library(datachannels STATIC ${DATACHANNELS_SOURCES})
-set_target_properties(datachannels PROPERTIES
-	VERSION ${PROJECT_VERSION}
-	CXX_STANDARD 17)
+	add_library(datachannels STATIC ${DATACHANNELS_SRC})
+	set_target_properties(datachannels PROPERTIES
+		VERSION ${PROJECT_VERSION}
+		CXX_STANDARD 17)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	target_include_directories(datachannels PUBLIC
-		${CMAKE_CURRENT_SOURCE_DIR}/wasm)
+		${CMAKE_CURRENT_SOURCE_DIR}/wasm/include)
+	target_include_directories(datachannels PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}/wasm/include/rtc)
 
 	set(WASM_OPTS
 		"SHELL:-s WASM=1"
@@ -33,8 +33,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		"SHELL:--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js")
 
 else()
-	target_include_directories(datachannels PUBLIC
-		${CMAKE_CURRENT_SOURCE_DIR}/native)
+	add_library(datachannels STATIC INTERFACE)
+	set_target_properties(datachannels PROPERTIES
+		CXX_STANDARD 17)
 
 	option(USE_JUICE "Use libjuice instead of libnice in libdatachannel" ON)
 	option(NO_WEBSOCKET "Disable WebSocket support in libdatachannel" OFF)

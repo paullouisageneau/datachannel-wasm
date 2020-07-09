@@ -19,40 +19,19 @@
  *   If not, see <http://www.gnu.org/licenses/>.                         *
  *************************************************************************/
 
-#ifndef RTC_WEBSOCKET_H
-#define RTC_WEBSOCKET_H
+#ifndef RTC_CONFIGURATION_H
+#define RTC_CONFIGURATION_H
 
-#include "channel.hpp"
+#include "include.hpp"
 
-#include <variant>
+#include <vector>
 
 namespace rtc {
 
-// WebSocket wrapper for emscripten
-class WebSocket : public Channel {
-public:
-	WebSocket(void);
-	WebSocket(const string &url);
-	~WebSocket(void);
-
-	void open(const string &url);
-	void close(void);
-	void send(const std::variant<binary, string> &data);
-
-	bool isOpen(void) const;
-	bool isClosed(void) const;
-
-private:
-	void triggerOpen(void);
-
-	int mId;
-	bool mConnected;
-
-	static void OpenCallback(void *ptr);
-	static void ErrorCallback(const char *error, void *ptr);
-	static void MessageCallback(const char *data, int size, void *ptr);
+struct Configuration {
+	std::vector<string> iceServers;
 };
 
 } // namespace rtc
 
-#endif // RTC_WEBSOCKET_H
+#endif // RTC_CONFIGURATION_H

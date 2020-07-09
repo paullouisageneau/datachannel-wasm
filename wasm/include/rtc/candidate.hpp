@@ -19,52 +19,29 @@
  *   If not, see <http://www.gnu.org/licenses/>.                         *
  *************************************************************************/
 
-#ifndef RTC_CHANNEL_H
-#define RTC_CHANNEL_H
+#ifndef RTC_CANDIDATE_H
+#define RTC_CANDIDATE_H
 
-#include <cstddef>
-#include <functional>
-#include <string>
-#include <variant>
-#include <vector>
+#include "include.hpp"
+
+#include <iostream>
 
 namespace rtc {
 
-using std::byte;
-using std::function;
-using std::string;
-typedef std::vector<byte> binary;
-
-class Channel {
+class Candidate {
 public:
-	virtual ~Channel(void) = default;
-
-	virtual void close(void) = 0;
-	virtual void send(const std::variant<binary, string> &data) = 0;
-
-	virtual bool isOpen(void) const = 0;
-	virtual bool isClosed(void) const = 0;
-
-	void onOpen(function<void()> callback);
-	void onClosed(function<void()> callback);
-	void onError(function<void(const string &error)> callback);
-	void onMessage(function<void(const std::variant<binary, string> &data)> callback);
-	void onMessage(function<void(const binary &data)> binaryCallback,
-	               function<void(const string &data)> stringCallback);
-
-protected:
-	virtual void triggerOpen(void);
-	virtual void triggerClosed(void);
-	virtual void triggerError(const string &error);
-	virtual void triggerMessage(const std::variant<binary, string> &data);
+	Candidate(const string &candidate, const string &mid) : mCandidate(candidate), mMid(mid) {}
+	string candidate() const { return mCandidate; }
+	string mid() const { return mMid; }
+	operator string() const { return "a=" + mCandidate; }
 
 private:
-	function<void()> mOpenCallback;
-	function<void()> mClosedCallback;
-	function<void(const string &error)> mErrorCallback;
-	function<void(const std::variant<binary, string> &data)> mMessageCallback;
+	string mCandidate;
+	string mMid;
 };
 
 } // namespace rtc
 
-#endif // RTC_CHANNEL_H
+std::ostream &operator<<(std::ostream &out, const rtc::Candidate &candidate);
+
+#endif // RTC_CANDIDATE_H

@@ -19,48 +19,53 @@
  *   If not, see <http://www.gnu.org/licenses/>.                         *
  *************************************************************************/
 
-#include "channel.hpp"
+#ifndef RTC_PEERCONNECTION_H
+#define RTC_PEERCONNECTION_H
+
+#include "candidate.hpp"
+#include "configuration.hpp"
+#include "datachannel.hpp"
+#include "description.hpp"
+#include "include.hpp"
+
+#include <functional>
+#include <optional>
+#include <variant>
 
 namespace rtc {
 
-template <class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template <class... Ts> overloaded(Ts...)->overloaded<Ts...>;
+class PeerConnection final {
+public:
+	PeerConnection();
+	PeerConnection(const Configuration &config);
+	~PeerConnection();
 
-void Channel::onOpen(std::function<void()> callback) { mOpenCallback = callback; }
+	std::shared_ptr<DataChannel> createDataChannel(const string &label);
 
-void Channel::onClosed(std::function<void()> callback) { mClosedCallback = callback; }
+	void setRemoteDescription(const Description &description);
+	void addRemoteCandidate(const Candidate &candidate);
 
-void Channel::onError(std::function<void(const string &)> callback) { mErrorCallback = callback; }
+	void onDataChannel(std::function<void(std::shared_ptr<DataChannel>)> callback);
+	void onLocalDescription(std::function<void(const Description &description)> callback);
+	void onLocalCandidate(std::function<void(const Candidate &candidate)> callback);
 
-void Channel::onMessage(std::function<void(const std::variant<binary, string> &data)> callback) {
-	mMessageCallback = callback;
-}
+protected:
+	void triggerDataChannel(std::shared_ptr<DataChannel> dataChannel);
+	void triggerLocalDescription(const Description &description);
+	void triggerLocalCandidate(const Candidate &candidate);
 
-void Channel::onMessage(std::function<void(const binary &data)> binaryCallback,
-                        std::function<void(const string &data)> stringCallback) {
-	onMessage([binaryCallback, stringCallback](const std::variant<binary, string> &data) {
-		std::visit(overloaded{binaryCallback, stringCallback}, data);
-	});
-}
+	std::function<void(std::shared_ptr<DataChannel>)> mDataChannelCallback;
+	std::function<void(const Description &description)> mLocalDescriptionCallback;
+	std::function<void(const Candidate &candidate)> mLocalCandidateCallback;
 
-void Channel::triggerOpen(void) {
-	if (mOpenCallback)
-		mOpenCallback();
-}
+private:
+	int mId;
 
-void Channel::triggerClosed(void) {
-	if (mClosedCallback)
-		mClosedCallback();
-}
-
-void Channel::triggerError(const string &error) {
-	if (mErrorCallback)
-		mErrorCallback(error);
-}
-
-void Channel::triggerMessage(const std::variant<binary, string> &data) {
-	if (mMessageCallback)
-		mMessageCallback(data);
-}
+	static void DataChannelCallback(int dc, void *ptr);
+	static void DescriptionCallback(const char *sdp, const char *type, void *ptr);
+	static void CandidateCallback(const char *candidate, const char *mid, void *ptr);
+};
 
 } // namespace rtc
+
+#endif // RTC_PEERCONNECTION_H

@@ -66,11 +66,9 @@ void WebSocket::MessageCallback(const char *data, int size, void *ptr) {
 	}
 }
 
-WebSocket::WebSocket(void) : mId(0), mConnected(false) {}
+WebSocket::WebSocket() : mId(0), mConnected(false) {}
 
-WebSocket::WebSocket(const string &url) : mId(0) { open(url); }
-
-WebSocket::~WebSocket(void) { close(); }
+WebSocket::~WebSocket() { close(); }
 
 void WebSocket::open(const string &url) {
 	close();
@@ -93,9 +91,9 @@ void WebSocket::close(void) {
 	}
 }
 
-bool WebSocket::isOpen(void) const { return mConnected; }
+bool WebSocket::isOpen() const { return mConnected; }
 
-bool WebSocket::isClosed(void) const { return mId == 0; }
+bool WebSocket::isClosed() const { return mId == 0; }
 
 void WebSocket::send(const std::variant<binary, string> &data) {
 	if (!mId)
@@ -111,7 +109,7 @@ void WebSocket::send(const std::variant<binary, string> &data) {
 	    data);
 }
 
-void WebSocket::triggerOpen(void) {
+void WebSocket::triggerOpen() {
 	mConnected = true;
 	Channel::triggerOpen();
 }
