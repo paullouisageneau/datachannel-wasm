@@ -40,6 +40,6 @@ else()
 	option(NO_EXAMPLES "Disable examples in libdatachannel" ON)
 
 	add_subdirectory(deps/libdatachannel EXCLUDE_FROM_ALL)
-	target_link_libraries(datachannels PUBLIC datachannel-static)
+	target_link_libraries(datachannels INTERFACE datachannel-static)
 endif()
 
