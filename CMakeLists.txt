@@ -33,7 +33,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		"SHELL:--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/pre.js")
 
 else()
-	add_library(datachannels STATIC INTERFACE)
+	add_library(datachannels INTERFACE)
 	set_target_properties(datachannels PROPERTIES
 		CXX_STANDARD 17)
 
