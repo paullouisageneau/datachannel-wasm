@@ -35,7 +35,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 else()
 	add_library(datachannels INTERFACE)
 
-	option(USE_JUICE "Use libjuice instead of libnice in libdatachannel" ON)
 	option(NO_WEBSOCKET "Disable WebSocket support in libdatachannel" OFF)
 	option(NO_EXAMPLES "Disable examples in libdatachannel" ON)
 
