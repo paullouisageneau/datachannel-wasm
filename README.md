@@ -2,6 +2,8 @@
 
 datachannel-wasm is a C++ WebRTC Data Channels and WebSocket wrapper for [Emscripten](https://emscripten.org/). It can be used transparently with CMake for both WebAssembly targets and native targets. For native targets, it will switch to linking statically against [libdatachannel](https://github.com/paullouisageneau/libdatachannel).
 
+The interface is a subset of the one of [libdatachannel](https://github.com/paullouisageneau/libdatachannel), see what is available in [wasm/include](https://github.com/paullouisageneau/datachanel-wasm/wasm/include).
+
 These wrappers were originally written for my multiplayer game [Convergence](https://github.com/paullouisageneau/convergence) and were extracted from there to be easily reusable.
 
 ## Installation
@@ -21,7 +23,7 @@ target_link_libraries(my_project datachannel-wasm)
 
 ## Building
 
-### WebAssembly with Emscripten
+### Wasm with Emscripten
 
 Building with emscripten will link against the JavaScript WebRTC and WebSocket wrapper.
 
