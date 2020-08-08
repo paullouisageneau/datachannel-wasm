@@ -84,7 +84,7 @@
 				var size = byteArray.byteLength;
 				if(!size) return;
 				var pBuffer = _malloc(size);
-				var heapBytes = new Uint8Array(Module.HEAPU8.buffer, pBuffer, size);
+				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 				heapBytes.set(byteArray);
 				var userPointer = webSocket.rtcUserPointer || 0;
 				Module['dynCall_viii'](messageCallback, pBuffer, size, userPointer);
@@ -100,7 +100,7 @@
 		wsSendMessage: function(ws, pBuffer, size) {
 			var webSocket = WEBSOCKET.map[ws];
 			if(webSocket.readyState != 1) return 0;
-			var heapBytes = new Uint8Array(Module.HEAPU8.buffer, pBuffer, size);
+			var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 			webSocket.send(heapBytes);
 			return size;
 		},

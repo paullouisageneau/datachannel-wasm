@@ -91,7 +91,8 @@
 			if(!window.RTCPeerConnection) return 0;
 			var iceServers = [];
 			for(var i = 0; i < nIceServers; ++i) {
-				var p = Module.HEAPU32[pIceServers/Module.HEAPU32.BYTES_PER_ELEMENT + i];
+			  var heap = Module['HEAPU32'];
+				var p = heap[pIceServers/heap.BYTES_PER_ELEMENT + i];
 				iceServers.push({
 					urls: [UTF8ToString(p)],
 				});
@@ -229,7 +230,7 @@
 					var byteArray = new Uint8Array(evt.data);
 					var size = byteArray.length;
 					var pBuffer = _malloc(size);
-					var heapBytes = new Uint8Array(Module.HEAPU8.buffer, pBuffer, size);
+					var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 					heapBytes.set(byteArray);
 					Module['dynCall_viii'](messageCallback, pBuffer, size, userPointer);
 					_free(pBuffer);
@@ -246,7 +247,7 @@
 			var dataChannel = WEBRTC.dataChannelsMap[dc];
 			if(dataChannel.readyState != 'open') return 0;
 			if(size >= 0) {
-				var heapBytes = new Uint8Array(Module.HEAPU8.buffer, pBuffer, size);
+				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 				dataChannel.send(heapBytes.buffer);
 				return size;
 			} else {
