@@ -30,7 +30,7 @@ Building with emscripten will link against the JavaScript WebRTC and WebSocket w
 This requires that you have [emsdk](https://github.com/emscripten-core/emsdk) installed and activated in your environment.
 
 ```bash
-$ cmake -B build-emscripten -DCMAKE_TOOLCHAIN_FILE=$EMSDK/emscripten/master/cmake/Modules/Platform/Emscripten.cmake
+$ cmake -B build-emscripten -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
 $ cd build-emscripten
 $ make -j2
 ```
