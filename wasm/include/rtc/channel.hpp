@@ -41,22 +41,22 @@ public:
 
 	void onOpen(std::function<void()> callback);
 	void onClosed(std::function<void()> callback);
-	void onError(std::function<void(const string &error)> callback);
-	void onMessage(std::function<void(const std::variant<binary, string> &data)> callback);
-	void onMessage(std::function<void(const binary &data)> binaryCallback,
-	               std::function<void(const string &data)> stringCallback);
+	void onError(std::function<void(string error)> callback);
+	void onMessage(std::function<void(std::variant<binary, string> data)> callback);
+	void onMessage(std::function<void(binary data)> binaryCallback,
+	               std::function<void(string data)> stringCallback);
 
 protected:
 	virtual void triggerOpen(void);
 	virtual void triggerClosed(void);
 	virtual void triggerError(const string &error);
-	virtual void triggerMessage(const std::variant<binary, string> &data);
+	virtual void triggerMessage(std::variant<binary, string> data);
 
 private:
 	std::function<void()> mOpenCallback;
 	std::function<void()> mClosedCallback;
-	std::function<void(const string &error)> mErrorCallback;
-	std::function<void(const std::variant<binary, string> &data)> mMessageCallback;
+	std::function<void(string error)> mErrorCallback;
+	std::function<void(std::variant<binary, string> data)> mMessageCallback;
 };
 
 } // namespace rtc

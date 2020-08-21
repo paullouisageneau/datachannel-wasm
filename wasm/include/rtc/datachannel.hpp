@@ -35,7 +35,7 @@ public:
 	~DataChannel();
 
 	void close() override;
-	void send(const std::variant<binary, string> &data) override;
+	void send(std::variant<binary, string> data) override;
 
 	bool isOpen() const override;
 	bool isClosed() const override;
