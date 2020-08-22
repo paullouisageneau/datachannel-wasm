@@ -95,7 +95,7 @@ bool WebSocket::isOpen() const { return mConnected; }
 
 bool WebSocket::isClosed() const { return mId == 0; }
 
-void WebSocket::send(const std::variant<binary, string> &data) {
+void WebSocket::send(std::variant<binary, string> data) {
 	if (!mId)
 		return;
 	std::visit(
@@ -106,7 +106,7 @@ void WebSocket::send(const std::variant<binary, string> &data) {
 		    else
 			    throw std::runtime_error("WebSocket string messages are not supported");
 	    },
-	    data);
+	    std::move(data));
 }
 
 void WebSocket::triggerOpen() {
