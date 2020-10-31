@@ -34,7 +34,7 @@ public:
 	virtual ~Channel(void) = default;
 
 	virtual void close(void) = 0;
-	virtual void send(const std::variant<binary, string> &data) = 0;
+	virtual void send(std::variant<binary, string> data) = 0;
 
 	virtual bool isOpen(void) const = 0;
 	virtual bool isClosed(void) const = 0;

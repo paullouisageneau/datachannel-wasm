@@ -57,7 +57,7 @@ void Channel::triggerError(const string &error) {
 		mErrorCallback(error);
 }
 
-void Channel::triggerMessage(const std::variant<binary, string> &data) {
+void Channel::triggerMessage(const std::variant<binary, string> data) {
 	if (mMessageCallback)
 		mMessageCallback(data);
 }
