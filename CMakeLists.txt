@@ -36,6 +36,7 @@ else()
 	add_library(datachannel-wasm INTERFACE)
 
 	option(NO_WEBSOCKET "Disable WebSocket support in libdatachannel" OFF)
+	option(NO_MEDIA "Disable media support in libdatachannel" ON)
 	option(NO_EXAMPLES "Disable examples in libdatachannel" ON)
 
 	add_subdirectory(deps/libdatachannel EXCLUDE_FROM_ALL)
