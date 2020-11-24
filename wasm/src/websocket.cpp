@@ -57,8 +57,12 @@ void WebSocket::MessageCallback(const char *data, int size, void *ptr) {
 	WebSocket *w = static_cast<WebSocket *>(ptr);
 	if (w) {
 		if (data) {
-			auto b = reinterpret_cast<const byte *>(data);
-			w->triggerMessage(binary(b, b + size));
+			if (size >= 0) {
+				auto b = reinterpret_cast<const byte *>(data);
+				w->triggerMessage(binary(b, b + size));
+			} else {
+				w->triggerMessage(string(data));
+			}
 		} else {
 			w->close();
 			w->triggerClosed();
@@ -95,18 +99,15 @@ bool WebSocket::isOpen() const { return mConnected; }
 
 bool WebSocket::isClosed() const { return mId == 0; }
 
-void WebSocket::send(std::variant<binary, string> data) {
+void WebSocket::send(std::variant<binary, string> message) {
 	if (!mId)
 		return;
-	std::visit(
-	    [this](const auto &v) {
-		    using T = std::decay_t<decltype(v)>;
-		    if constexpr (std::is_same_v<T, binary>)
-			    wsSendMessage(mId, reinterpret_cast<const char *>(v.data()), v.size());
-		    else
-			    throw std::runtime_error("WebSocket string messages are not supported");
-	    },
-	    std::move(data));
+	std::visit(overloaded{[this](const binary &b) {
+		                      auto data = reinterpret_cast<const char *>(b.data());
+		                      wsSendMessage(mId, data, b.size());
+	                      },
+	                      [this](const string &s) { wsSendMessage(mId, s.c_str(), -1); }},
+	           std::move(message));
 }
 
 void WebSocket::triggerOpen() {

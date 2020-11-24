@@ -96,11 +96,11 @@ void DataChannel::close(void) {
 void DataChannel::send(std::variant<binary, string> message) {
 	if (!mId)
 		return;
-	std::visit(overloaded{[this](binary b) {
+	std::visit(overloaded{[this](const binary &b) {
 		                      auto data = reinterpret_cast<const char *>(b.data());
 		                      rtcSendMessage(mId, data, b.size());
 	                      },
-	                      [this](string s) { rtcSendMessage(mId, s.c_str(), -1); }},
+	                      [this](const string &s) { rtcSendMessage(mId, s.c_str(), -1); }},
 	           std::move(message));
 }
 
@@ -111,4 +111,3 @@ bool DataChannel::isClosed(void) const { return mId == 0; }
 std::string DataChannel::label(void) const { return mLabel; }
 
 } // namespace rtc
-

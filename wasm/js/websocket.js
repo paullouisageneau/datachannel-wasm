@@ -80,15 +80,21 @@
 			var webSocket = WEBSOCKET.map[ws];
 			webSocket.onmessage = function(evt) {
 				if(webSocket.rtcUserDeleted) return;
-				var byteArray = new Uint8Array(evt.data);
-				var size = byteArray.byteLength;
-				if(!size) return;
-				var pBuffer = _malloc(size);
-				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
-				heapBytes.set(byteArray);
-				var userPointer = webSocket.rtcUserPointer || 0;
-				Module['dynCall_viii'](messageCallback, pBuffer, size, userPointer);
-				_free(pBuffer);
+				if(evt.data instanceof ArrayBuffer) {
+					var byteArray = new Uint8Array(evt.data);
+					var size = byteArray.byteLength;
+					var pBuffer = _malloc(size);
+					var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
+					heapBytes.set(byteArray);
+					var userPointer = webSocket.rtcUserPointer || 0;
+					Module['dynCall_viii'](messageCallback, pBuffer, size, userPointer);
+					_free(pBuffer);
+				} else {
+					var pStr = WEBRTC.allocUTF8FromString(evt.data);
+					var userPointer = webSocket.rtcUserPointer || 0;
+					Module['dynCall_viii'](messageCallback, pStr, -1, userPointer);
+					_free(pStr);
+				}
 			};
 			webSocket.onclose = function() {
 				if(webSocket.rtcUserDeleted) return;
@@ -100,9 +106,15 @@
 		wsSendMessage: function(ws, pBuffer, size) {
 			var webSocket = WEBSOCKET.map[ws];
 			if(webSocket.readyState != 1) return 0;
-			var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
-			webSocket.send(heapBytes);
-			return size;
+			if(size >= 0) {
+				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
+				webSocket.send(heapBytes);
+				return size;
+			} else {
+				var str = UTF8ToString(pBuffer);
+				webSocket.send(str);
+				return lengthBytesUTF8(str);
+			}
 		},
 
 		wsSetUserPointer: function(ws, ptr) {
