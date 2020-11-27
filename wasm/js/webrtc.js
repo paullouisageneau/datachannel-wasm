@@ -208,7 +208,7 @@
 			var cb = function(evt) {
 				if(dataChannel.rtcUserDeleted) return;
 				var userPointer = dataChannel.rtcUserPointer || 0;
-				var pError = WEBRTC.allocUTF8FromString(evt.message);
+				var pError = evt.message ? WEBRTC.allocUTF8FromString(evt.message) : 0;
 				Module['dynCall_vii'](errorCallback, pError, userPointer);
 				_free(pError);
 			};
