@@ -26,15 +26,17 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace rtc {
 
 using std::byte;
-using std::function;
 using std::string;
-typedef std::vector<byte> binary;
+using binary = std::vector<byte>;
+using message_variant = std::variant<binary, string>;
 
+using std::function;
 using std::nullopt;
 
 template <class... Ts> struct overloaded : Ts... { using Ts::operator()...; };

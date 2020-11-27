@@ -99,15 +99,24 @@ bool WebSocket::isOpen() const { return mConnected; }
 
 bool WebSocket::isClosed() const { return mId == 0; }
 
-void WebSocket::send(std::variant<binary, string> message) {
+bool WebSocket::send(message_variant message) {
 	if (!mId)
-		return;
-	std::visit(overloaded{[this](const binary &b) {
-		                      auto data = reinterpret_cast<const char *>(b.data());
-		                      wsSendMessage(mId, data, b.size());
-	                      },
-	                      [this](const string &s) { wsSendMessage(mId, s.c_str(), -1); }},
-	           std::move(message));
+		return false;
+
+	return std::visit(
+	    overloaded{[this](const binary &b) {
+		               auto data = reinterpret_cast<const char *>(b.data());
+		               return wsSendMessage(mId, data, int(b.size())) >= 0;
+	               },
+	               [this](const string &s) { return wsSendMessage(mId, s.c_str(), -1) >= 0; }},
+	    std::move(message));
+}
+
+bool WebSocket::send(const byte *data, size_t size) {
+	if (!mId)
+		return false;
+
+	return wsSendMessage(mId, reinterpret_cast<const char *>(data), int(size)) >= 0;
 }
 
 void WebSocket::triggerOpen() {

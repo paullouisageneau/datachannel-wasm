@@ -93,15 +93,24 @@ void DataChannel::close(void) {
 	}
 }
 
-void DataChannel::send(std::variant<binary, string> message) {
+bool DataChannel::send(message_variant message) {
 	if (!mId)
-		return;
-	std::visit(overloaded{[this](const binary &b) {
-		                      auto data = reinterpret_cast<const char *>(b.data());
-		                      rtcSendMessage(mId, data, b.size());
-	                      },
-	                      [this](const string &s) { rtcSendMessage(mId, s.c_str(), -1); }},
-	           std::move(message));
+		return false;
+
+	return std::visit(
+	    overloaded{[this](const binary &b) {
+		               auto data = reinterpret_cast<const char *>(b.data());
+		               return rtcSendMessage(mId, data, int(b.size())) >= 0;
+	               },
+	               [this](const string &s) { return rtcSendMessage(mId, s.c_str(), -1) >= 0; }},
+	    std::move(message));
+}
+
+bool DataChannel::send(const byte *data, size_t size) {
+	if (!mId)
+		return false;
+
+	return rtcSendMessage(mId, reinterpret_cast<const char *>(data), int(size)) >= 0;
 }
 
 bool DataChannel::isOpen(void) const { return mConnected; }

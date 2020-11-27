@@ -31,13 +31,13 @@ void Channel::onClosed(std::function<void()> callback) { mClosedCallback = callb
 
 void Channel::onError(std::function<void(string)> callback) { mErrorCallback = callback; }
 
-void Channel::onMessage(std::function<void(std::variant<binary, string> data)> callback) {
+void Channel::onMessage(std::function<void(message_variant data)> callback) {
 	mMessageCallback = callback;
 }
 
 void Channel::onMessage(std::function<void(binary data)> binaryCallback,
                         std::function<void(string data)> stringCallback) {
-	onMessage([binaryCallback, stringCallback](std::variant<binary, string> data) {
+	onMessage([binaryCallback, stringCallback](message_variant data) {
 		std::visit(overloaded{binaryCallback, stringCallback}, std::move(data));
 	});
 }
@@ -57,7 +57,7 @@ void Channel::triggerError(const string &error) {
 		mErrorCallback(error);
 }
 
-void Channel::triggerMessage(const std::variant<binary, string> data) {
+void Channel::triggerMessage(const message_variant data) {
 	if (mMessageCallback)
 		mMessageCallback(data);
 }

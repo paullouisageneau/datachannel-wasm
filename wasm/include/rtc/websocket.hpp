@@ -25,8 +25,6 @@
 #include "channel.hpp"
 #include "include.hpp"
 
-#include <variant>
-
 namespace rtc {
 
 // WebSocket wrapper for emscripten
@@ -37,7 +35,8 @@ public:
 
 	void open(const string &url);
 	void close() override;
-	void send(std::variant<binary, string> data) override;
+	bool send(message_variant data) override;
+	bool send(const byte *data, size_t size) override;
 
 	bool isOpen() const override;
 	bool isClosed() const override;

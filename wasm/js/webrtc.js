@@ -221,11 +221,9 @@
 				if(dataChannel.rtcUserDeleted) return;
 				var userPointer = dataChannel.rtcUserPointer || 0;
 				if(typeof evt.data == 'string') {
-					var strLen = lengthBytesUTF8(evt.data);
-					var pBuffer = _malloc(strLen + 1);
-					stringToUTF8(evt.data, pBuffer, strLen + 1);
-					Module['dynCall_viii'](messageCallback, pBuffer, -1, userPointer);
-					_free(pBuffer);
+					var pStr = WEBRTC.allocUTF8FromString(evt.data);
+					Module['dynCall_viii'](messageCallback, pStr, -1, userPointer);
+					_free(pStr);
 				} else {
 					var byteArray = new Uint8Array(evt.data);
 					var size = byteArray.length;

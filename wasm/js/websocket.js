@@ -80,7 +80,12 @@
 			var webSocket = WEBSOCKET.map[ws];
 			webSocket.onmessage = function(evt) {
 				if(webSocket.rtcUserDeleted) return;
-				if(evt.data instanceof ArrayBuffer) {
+				if(typeof evt.data == 'string') {
+					var pStr = WEBRTC.allocUTF8FromString(evt.data);
+					var userPointer = webSocket.rtcUserPointer || 0;
+					Module['dynCall_viii'](messageCallback, pStr, -1, userPointer);
+					_free(pStr);
+				} else {
 					var byteArray = new Uint8Array(evt.data);
 					var size = byteArray.byteLength;
 					var pBuffer = _malloc(size);
@@ -89,11 +94,6 @@
 					var userPointer = webSocket.rtcUserPointer || 0;
 					Module['dynCall_viii'](messageCallback, pBuffer, size, userPointer);
 					_free(pBuffer);
-				} else {
-					var pStr = WEBRTC.allocUTF8FromString(evt.data);
-					var userPointer = webSocket.rtcUserPointer || 0;
-					Module['dynCall_viii'](messageCallback, pStr, -1, userPointer);
-					_free(pStr);
 				}
 			};
 			webSocket.onclose = function() {

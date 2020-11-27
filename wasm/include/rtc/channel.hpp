@@ -24,9 +24,6 @@
 
 #include "include.hpp"
 
-#include <functional>
-#include <variant>
-
 namespace rtc {
 
 class Channel {
@@ -34,7 +31,8 @@ public:
 	virtual ~Channel(void) = default;
 
 	virtual void close(void) = 0;
-	virtual void send(std::variant<binary, string> data) = 0;
+	virtual bool send(message_variant data) = 0;
+	virtual bool send(const byte *data, size_t size) = 0;
 
 	virtual bool isOpen(void) const = 0;
 	virtual bool isClosed(void) const = 0;
@@ -42,7 +40,7 @@ public:
 	void onOpen(std::function<void()> callback);
 	void onClosed(std::function<void()> callback);
 	void onError(std::function<void(string error)> callback);
-	void onMessage(std::function<void(std::variant<binary, string> data)> callback);
+	void onMessage(std::function<void(message_variant data)> callback);
 	void onMessage(std::function<void(binary data)> binaryCallback,
 	               std::function<void(string data)> stringCallback);
 
@@ -50,13 +48,13 @@ protected:
 	virtual void triggerOpen(void);
 	virtual void triggerClosed(void);
 	virtual void triggerError(const string &error);
-	virtual void triggerMessage(std::variant<binary, string> data);
+	virtual void triggerMessage(message_variant data);
 
 private:
 	std::function<void()> mOpenCallback;
 	std::function<void()> mClosedCallback;
 	std::function<void(string error)> mErrorCallback;
-	std::function<void(std::variant<binary, string> data)> mMessageCallback;
+	std::function<void(message_variant data)> mMessageCallback;
 };
 
 } // namespace rtc
