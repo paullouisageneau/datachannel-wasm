@@ -129,11 +129,12 @@ bool DataChannel::isOpen() const { return mConnected; }
 bool DataChannel::isClosed() const { return mId == 0; }
 
 size_t DataChannel::bufferedAmount() const {
-	if(!mId)
+	if (!mId)
 		return 0;
 
 	int ret = rtcGetBufferedAmount(mId);
-	if(ret < 0) return 0;
+	if (ret < 0)
+		return 0;
 
 	return size_t(ret);
 }
@@ -141,7 +142,8 @@ size_t DataChannel::bufferedAmount() const {
 std::string DataChannel::label() const { return mLabel; }
 
 void DataChannel::setBufferedAmountLowThreshold(size_t amount) {
-	if(!mId) return;
+	if (!mId)
+		return;
 
 	rtcSetBufferedAmountLowThreshold(mId, int(amount));
 }
