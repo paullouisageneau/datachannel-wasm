@@ -25,21 +25,33 @@ namespace rtc {
 
 using std::function;
 
-void Channel::onOpen(std::function<void()> callback) { mOpenCallback = callback; }
+size_t Channel::bufferedAmount() const { return 0; /* Dummy */ }
 
-void Channel::onClosed(std::function<void()> callback) { mClosedCallback = callback; }
+void Channel::onOpen(std::function<void()> callback) { mOpenCallback = std::move(callback); }
 
-void Channel::onError(std::function<void(string)> callback) { mErrorCallback = callback; }
+void Channel::onClosed(std::function<void()> callback) { mClosedCallback = std::move(callback); }
+
+void Channel::onError(std::function<void(string)> callback) {
+	mErrorCallback = std::move(callback);
+}
 
 void Channel::onMessage(std::function<void(message_variant data)> callback) {
-	mMessageCallback = callback;
+	mMessageCallback = std::move(callback);
 }
 
 void Channel::onMessage(std::function<void(binary data)> binaryCallback,
                         std::function<void(string data)> stringCallback) {
-	onMessage([binaryCallback, stringCallback](message_variant data) {
+	onMessage([binaryCallback = std::move(binaryCallback),
+	           stringCallback = std::move(stringCallback)](message_variant data) {
 		std::visit(overloaded{binaryCallback, stringCallback}, std::move(data));
 	});
+}
+
+void Channel::onBufferedAmountLow(std::function<void()> callback) {
+	mBufferedAmountLowCallback = std::move(callback);
+}
+
+void Channel::setBufferedAmountLowThreshold(size_t amount) { /* Dummy */
 }
 
 void Channel::triggerOpen() {
@@ -52,14 +64,19 @@ void Channel::triggerClosed() {
 		mClosedCallback();
 }
 
-void Channel::triggerError(const string &error) {
+void Channel::triggerError(string error) {
 	if (mErrorCallback)
-		mErrorCallback(error);
+		mErrorCallback(std::move(error));
 }
 
 void Channel::triggerMessage(const message_variant data) {
 	if (mMessageCallback)
 		mMessageCallback(data);
+}
+
+void Channel::triggerBufferedAmountLow() {
+	if(mBufferedAmountLowCallback)
+		mBufferedAmountLowCallback();
 }
 
 } // namespace rtc

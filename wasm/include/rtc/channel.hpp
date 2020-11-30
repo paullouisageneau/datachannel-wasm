@@ -28,14 +28,15 @@ namespace rtc {
 
 class Channel {
 public:
-	virtual ~Channel(void) = default;
+	virtual ~Channel() = default;
 
-	virtual void close(void) = 0;
+	virtual void close() = 0;
 	virtual bool send(message_variant data) = 0;
 	virtual bool send(const byte *data, size_t size) = 0;
 
-	virtual bool isOpen(void) const = 0;
-	virtual bool isClosed(void) const = 0;
+	virtual bool isOpen() const = 0;
+	virtual bool isClosed() const = 0;
+	virtual size_t bufferedAmount() const;
 
 	void onOpen(std::function<void()> callback);
 	void onClosed(std::function<void()> callback);
@@ -43,18 +44,23 @@ public:
 	void onMessage(std::function<void(message_variant data)> callback);
 	void onMessage(std::function<void(binary data)> binaryCallback,
 	               std::function<void(string data)> stringCallback);
+	void onBufferedAmountLow(std::function<void()> callback);
+
+	virtual void setBufferedAmountLowThreshold(size_t amount);
 
 protected:
-	virtual void triggerOpen(void);
-	virtual void triggerClosed(void);
-	virtual void triggerError(const string &error);
+	virtual void triggerOpen();
+	virtual void triggerClosed();
+	virtual void triggerError(string error);
 	virtual void triggerMessage(message_variant data);
+	virtual void triggerBufferedAmountLow();
 
 private:
 	std::function<void()> mOpenCallback;
 	std::function<void()> mClosedCallback;
 	std::function<void(string error)> mErrorCallback;
 	std::function<void(message_variant data)> mMessageCallback;
+	std::function<void()> mBufferedAmountLowCallback;
 };
 
 } // namespace rtc

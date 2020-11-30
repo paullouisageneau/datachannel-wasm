@@ -32,6 +32,9 @@ extern int rtcGetDataChannelLabel(int dc, char *buffer, int size);
 extern void rtcSetOpenCallback(int dc, void (*openCallback)(void *));
 extern void rtcSetErrorCallback(int dc, void (*errorCallback)(const char *, void *));
 extern void rtcSetMessageCallback(int dc, void (*messageCallback)(const char *, int, void *));
+extern void rtcSetBufferedAmountLowCallback(int dc, void (*bufferedAmountLowCallback)(void *));
+extern int rtcGetBufferedAmount(int dc);
+extern void rtcSetBufferedAmountLowThreshold(int dc, int threshold);
 extern int rtcSendMessage(int dc, const char *buffer, int size);
 extern void rtcSetUserPointer(int i, void *ptr);
 }
@@ -72,20 +75,28 @@ void DataChannel::MessageCallback(const char *data, int size, void *ptr) {
 	}
 }
 
+void DataChannel::BufferedAmountLowCallback(void *ptr) {
+	DataChannel *d = static_cast<DataChannel *>(ptr);
+	if (d) {
+		d->triggerBufferedAmountLow();
+	}
+}
+
 DataChannel::DataChannel(int id) : mId(id), mConnected(false) {
 	rtcSetUserPointer(mId, this);
 	rtcSetOpenCallback(mId, OpenCallback);
 	rtcSetErrorCallback(mId, ErrorCallback);
 	rtcSetMessageCallback(mId, MessageCallback);
+	rtcSetBufferedAmountLowCallback(mId, BufferedAmountLowCallback);
 
 	char str[256];
 	rtcGetDataChannelLabel(mId, str, 256);
 	mLabel = str;
 }
 
-DataChannel::~DataChannel(void) { close(); }
+DataChannel::~DataChannel() { close(); }
 
-void DataChannel::close(void) {
+void DataChannel::close() {
 	mConnected = false;
 	if (mId) {
 		rtcDeleteDataChannel(mId);
@@ -113,10 +124,26 @@ bool DataChannel::send(const byte *data, size_t size) {
 	return rtcSendMessage(mId, reinterpret_cast<const char *>(data), int(size)) >= 0;
 }
 
-bool DataChannel::isOpen(void) const { return mConnected; }
+bool DataChannel::isOpen() const { return mConnected; }
 
-bool DataChannel::isClosed(void) const { return mId == 0; }
+bool DataChannel::isClosed() const { return mId == 0; }
 
-std::string DataChannel::label(void) const { return mLabel; }
+size_t DataChannel::bufferedAmount() const {
+	if(!mId)
+		return 0;
+
+	int ret = rtcGetBufferedAmount(mId);
+	if(ret < 0) return 0;
+
+	return size_t(ret);
+}
+
+std::string DataChannel::label() const { return mLabel; }
+
+void DataChannel::setBufferedAmountLowThreshold(size_t amount) {
+	if(!mId) return;
+
+	rtcSetBufferedAmountLowThreshold(mId, int(amount));
+}
 
 } // namespace rtc

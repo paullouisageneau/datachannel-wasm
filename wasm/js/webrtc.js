@@ -241,6 +241,26 @@
 			};
 		},
 
+		rtcSetBufferedAmountLowCallback: function(dc, bufferedAmountLowCallback) {
+			var dataChannel = WEBRTC.dataChannelsMap[dc];
+			var cb = function(evt) {
+				if(dataChannel.rtcUserDeleted) return;
+				var userPointer = dataChannel.rtcUserPointer || 0;
+					Module['dynCall_vi'](bufferedAmountLowCallback, userPointer);
+			};
+			dataChannel.onbufferedamountlow = cb;
+		},
+
+		rtcGetBufferedAmount: function(dc) {
+			var dataChannel = WEBRTC.dataChannelsMap[dc];
+			return dataChannel.bufferedAmount;
+		},
+
+		rtcSetBufferedAmountLowThreshold: function(dc, threshold) {
+			var dataChannel = WEBRTC.dataChannelsMap[dc];
+			dataChannel.bufferedAmountLowThreshold = threshold;
+		},
+
 		rtcSendMessage: function(dc, pBuffer, size) {
 			var dataChannel = WEBRTC.dataChannelsMap[dc];
 			if(dataChannel.readyState != 'open') return 0;

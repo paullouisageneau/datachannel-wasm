@@ -87,7 +87,7 @@ void WebSocket::open(const string &url) {
 	wsSetMessageCallback(mId, MessageCallback);
 }
 
-void WebSocket::close(void) {
+void WebSocket::close() {
 	mConnected = false;
 	if (mId) {
 		wsDeleteWebSocket(mId);

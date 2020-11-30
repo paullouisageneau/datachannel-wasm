@@ -82,7 +82,7 @@ PeerConnection::PeerConnection(const Configuration &config) {
 	rtcSetLocalCandidateCallback(mId, CandidateCallback);
 }
 
-PeerConnection::~PeerConnection(void) { rtcDeletePeerConnection(mId); }
+PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
 
 shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label) {
 	return std::make_shared<DataChannel>(rtcCreateDataChannel(mId, label.c_str()));

@@ -38,8 +38,10 @@ public:
 
 	bool isOpen() const override;
 	bool isClosed() const override;
-
+	size_t bufferedAmount() const override;
 	string label() const;
+
+	void setBufferedAmountLowThreshold(size_t amount) override;
 
 private:
 	int mId;
@@ -49,6 +51,7 @@ private:
 	static void OpenCallback(void *ptr);
 	static void ErrorCallback(const char *error, void *ptr);
 	static void MessageCallback(const char *data, int size, void *ptr);
+	static void BufferedAmountLowCallback(void *ptr);
 };
 
 } // namespace rtc
