@@ -266,7 +266,7 @@
 			if(dataChannel.readyState != 'open') return 0;
 			if(size >= 0) {
 				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
-				dataChannel.send(heapBytes.buffer);
+				dataChannel.send(heapBytes);
 				return size;
 			} else {
 				var str = UTF8ToString(pBuffer);
