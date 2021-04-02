@@ -24,7 +24,8 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 
 	set(WASM_OPTS
 		"SHELL:-s WASM=1"
-		"SHELL:-s BINARYEN_METHOD=native-wasm")
+		"SHELL:-s BINARYEN_METHOD=native-wasm"
+		"SHELL:-s EXPORTED_RUNTIME_METHODS=[\"dynCall\"]")
 
 	target_compile_options(datachannel-wasm PUBLIC ${WASM_OPTS})
 	target_link_options(datachannel-wasm PUBLIC ${WASM_OPTS}

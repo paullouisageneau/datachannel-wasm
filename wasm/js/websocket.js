@@ -57,7 +57,7 @@
 			var cb = function() {
 				if(webSocket.rtcUserDeleted) return;
 				var userPointer = webSocket.rtcUserPointer || 0;
-				Module['dynCall_vi'](openCallback, userPointer);
+				Module['dynCall']('vi', openCallback, [userPointer]);
 			};
 			webSocket.onopen = cb;
 			if(webSocket.readyState == 1) setTimeout(cb, 0);
