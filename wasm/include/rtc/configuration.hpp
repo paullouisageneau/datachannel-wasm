@@ -19,7 +19,7 @@
 #ifndef RTC_CONFIGURATION_H
 #define RTC_CONFIGURATION_H
 
-#include "include.hpp"
+#include "common.hpp"
 
 #include <vector>
 
