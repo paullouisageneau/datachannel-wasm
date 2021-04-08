@@ -21,7 +21,6 @@
 #include <emscripten/emscripten.h>
 
 #include <exception>
-#include <iostream>
 #include <memory>
 
 extern "C" {
