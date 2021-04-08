@@ -43,7 +43,8 @@
 						});
 				};
 				peerConnection.onicecandidate = function(evt) {
-					if(evt.candidate) WEBRTC.handleCandidate(peerConnection, evt.candidate);
+					if(evt.candidate && evt.candidate.candidate)
+					  WEBRTC.handleCandidate(peerConnection, evt.candidate);
 				};
 				return pc;
 			},
