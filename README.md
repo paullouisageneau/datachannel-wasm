@@ -17,11 +17,11 @@ $ git submodule update --init --recursive
 CMakeLists.txt:
 ```cmake
 [...]
-add_subdirectory(deps/datachannel-wasm)
+add_subdirectory(deps/datachannel-wasm EXCLUDE_FROM_ALL)
 target_link_libraries(YOUR_PROJECT datachannel-wasm)
 ```
 
-Since, datachannel-wasm is compatible with [libdatachannel](https://github.com/paullouisageneau/libdatachannel), you can easily leverage both to make the same C++ code with Data Channels compile to native (including MacOS and Windows):
+Since datachannel-wasm is compatible with [libdatachannel](https://github.com/paullouisageneau/libdatachannel), you can easily leverage both to make the same C++ code compile to native (including MacOS and Windows):
 
 ```bash
 $ git submodule add https://github.com/paullouisageneau/datachannel-wasm.git deps/datachannel-wasm
@@ -32,11 +32,11 @@ $ git submodule update --init --recursive
 CMakeLists.txt:
 ```cmake
 if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
-    add_subdirectory(deps/datachannel-wasm)
+    add_subdirectory(deps/datachannel-wasm EXCLUDE_FROM_ALL)
     target_link_libraries(YOUR_PROJECT datachannel-wasm)
 else()
     option(NO_MEDIA "Disable media support in libdatachannel" ON)
-    add_subdirectory(deps/libdatachannel)
+    add_subdirectory(deps/libdatachannel EXCLUDE_FROM_ALL)
     target_link_libraries(YOUR_PROJECT datachannel-static)
 endif()
 ```
