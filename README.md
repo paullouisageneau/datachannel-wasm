@@ -8,7 +8,7 @@ These wrappers were originally written for my multiplayer game [Convergence](htt
 
 ## Installation
 
-You just need to add datachannel-wasm as a submodule:
+You just need to add datachannel-wasm as a submodule in your Emscripten project:
 ```bash
 $ git submodule add https://github.com/paullouisageneau/datachannel-wasm.git deps/datachannel-wasm
 $ git submodule update --init --recursive
@@ -18,7 +18,7 @@ CMakeLists.txt:
 ```cmake
 [...]
 add_subdirectory(deps/datachannel-wasm)
-target_link_libraries(my_project datachannel-wasm)
+target_link_libraries(YOUR_PROJECT datachannel-wasm)
 ```
 
 Since, datachannel-wasm is compatible with [libdatachannel](https://github.com/paullouisageneau/libdatachannel), you can easily leverage both to make the same C++ code with Data Channels compile to native (including MacOS and Windows):
@@ -33,11 +33,20 @@ CMakeLists.txt:
 ```cmake
 if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     add_subdirectory(deps/datachannel-wasm)
-    target_link_libraries(convergence datachannel-wasm)
+    target_link_libraries(YOUR_PROJECT datachannel-wasm)
 else()
     option(NO_MEDIA "Disable media support in libdatachannel" ON)
     add_subdirectory(deps/libdatachannel)
-    target_link_libraries(datachannel-wasm INTERFACE datachannel-static)
+    target_link_libraries(YOUR_PROJECT datachannel-static)
 endif()
+```
+
+## Building
+
+Building requires that you have [emsdk](https://github.com/emscripten-core/emsdk) installed and activated in your environment:
+```bash
+$ cmake -B build -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
+$ cd build
+$ make -j2
 ```
 
