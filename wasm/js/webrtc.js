@@ -148,6 +148,18 @@
 			peerConnection.rtcCandidateCallback = candidateCallback;
 		},
 
+		rtcSetStateChangeCallback: function(pc, stateChangeCallback) {
+			console.log('rtcSetStateChangeCallback called');
+		},
+
+		rtcSetGatheringStateChangeCallback: function(pc, gatheringStateChangeCallback) {
+			console.log('rtcSetGatheringStateChangeCallback called');
+		},
+
+		rtcSetSignalingStateChangeCallback: function(pc, signalingStateChangeCallback) {
+			console.log('rtcSetSignalingStateChangeCallback called');
+		},
+
 		rtcSetRemoteDescription: function(pc, pSdp, pType) {
 			var description = new RTCSessionDescription({
 				sdp: UTF8ToString(pSdp),
