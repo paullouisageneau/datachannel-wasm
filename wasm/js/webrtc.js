@@ -46,6 +46,15 @@
 					if(evt.candidate && evt.candidate.candidate)
 					  WEBRTC.handleCandidate(peerConnection, evt.candidate);
 				};
+				peerConnection.onconnectionstatechange = function(evt) {
+					WEBRTC.handleConnectionStateChange(peerConnection, peerConnection.connectionState)
+				};
+				peerConnection.onicegatheringstatechange = function() {
+					WEBRTC.handleIceGatheringStateChange(peerConnection, peerConnection.iceGatheringState)
+				};
+				peerConnection.onsignalingstatechange = function(evt) {
+					WEBRTC.handleSignalingStateChange(peerConnection, peerConnection.signalingState)
+				};
 				return pc;
 			},
 
@@ -82,6 +91,69 @@
 				Module['dynCall']('viii', candidateCallback, [pCandidate, pSdpMid, userPointer]);
 				_free(pCandidate);
 				_free(pSdpMid);
+			},
+
+			handleConnectionStateChange: function(peerConnection, connectionState) {
+				var stateChangeCallback =  peerConnection.rtcStateChangeCallback;
+				var userPointer = peerConnection.rtcUserPointer || 0;
+				switch(connectionState) {
+					case 'new':
+						Module['dynCall']('vii', stateChangeCallback, [0, userPointer]);
+						break;
+					case 'connecting':
+						Module['dynCall']('vii', stateChangeCallback, [1, userPointer]);
+						break;
+					case 'connected':
+						Module['dynCall']('vii', stateChangeCallback, [2, userPointer]);
+						break;
+					case 'disconnected':
+						Module['dynCall']('vii', stateChangeCallback, [3, userPointer]);
+						break;
+					case 'failed':
+						Module['dynCall']('vii', stateChangeCallback, [4, userPointer]);
+						break;
+					case 'closed':
+						Module['dynCall']('vii', stateChangeCallback, [5, userPointer]);
+						break;
+				}
+			},
+
+			handleIceGatheringStateChange: function(peerConnection, iceGatheringState) {
+				var gatheringStateChangeCallback = peerConnection.rtcGatheringStateChangeCallback;
+				var userPointer = peerConnection.rtcUserPointer || 0;
+				switch(iceGatheringState) {
+					case "new":
+						Module['dynCall']('vii', gatheringStateChangeCallback, [0, userPointer]);
+						break;
+					case "gathering":
+						Module['dynCall']('vii', gatheringStateChangeCallback, [1, userPointer]);
+						break;
+					case "complete":
+						Module['dynCall']('vii', gatheringStateChangeCallback, [2, userPointer]);
+						break;
+				}
+			},
+
+			handleSignalingStateChange: function(peerConnection, signalingState) {
+				var signalingStateChangeCallback = peerConnection.rtcSignalingStateChangeCallback;
+				var userPointer = peerConnection.rtcUserPointer || 0;
+				switch(signalingState) {
+					case "stable":
+						Module['dynCall']('vii', signalingStateChangeCallback, [0, userPointer]);
+						break;
+					case "have-local-offer":
+						Module['dynCall']('vii', signalingStateChangeCallback, [1, userPointer]);
+						break;
+					case "have-remote-offer":
+						Module['dynCall']('vii', signalingStateChangeCallback, [2, userPointer]);
+						break;
+					case "have-local-pranswer":
+						Module['dynCall']('vii', signalingStateChangeCallback, [3, userPointer]);
+						break;
+					case "have-remote-pranswer":
+						Module['dynCall']('vii', signalingStateChangeCallback, [4, userPointer]);
+						break;
+				}
 			},
 		},
 
@@ -149,15 +221,21 @@
 		},
 
 		rtcSetStateChangeCallback: function(pc, stateChangeCallback) {
-			console.log('rtcSetStateChangeCallback called');
+			if(!pc) return;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			peerConnection.rtcStateChangeCallback = stateChangeCallback;
 		},
 
 		rtcSetGatheringStateChangeCallback: function(pc, gatheringStateChangeCallback) {
-			console.log('rtcSetGatheringStateChangeCallback called');
+			if(!pc) return;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			peerConnection.rtcGatheringStateChangeCallback = gatheringStateChangeCallback;
 		},
 
 		rtcSetSignalingStateChangeCallback: function(pc, signalingStateChangeCallback) {
-			console.log('rtcSetSignalingStateChangeCallback called');
+			if(!pc) return;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			peerConnection.rtcSignalingStateChangeCallback = signalingStateChangeCallback;
 		},
 
 		rtcSetRemoteDescription: function(pc, pSdp, pType) {
