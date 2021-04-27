@@ -181,6 +181,26 @@
 			}
 		},
 
+		rtcLocalDescriptionSdp: function(pc) {
+			if(!pc) return 0;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			var localDescription = peerConnection.localDescription;
+			if(!localDescription) return 0;
+			var sdp = WEBRTC.allocUTF8FromString(localDescription.sdp);
+			// sdp should be freed later.
+			return sdp;
+		},
+
+		rtcLocalDescriptionType: function(pc) {
+			if(!pc) return 0;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			var localDescription = peerConnection.localDescription;
+			if(!localDescription) return 0;
+			var type = WEBRTC.allocUTF8FromString(localDescription.type);
+			// type should be freed later.
+			return type;
+		},
+
 		rtcCreateDataChannel: function(pc, pLabel) {
 			if(!pc) return 0;
 			var label = UTF8ToString(pLabel);

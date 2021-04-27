@@ -27,6 +27,8 @@
 extern "C" {
 extern int rtcCreatePeerConnection(const char **iceServers);
 extern void rtcDeletePeerConnection(int pc);
+extern char *rtcLocalDescriptionSdp(int pc);
+extern char *rtcLocalDescriptionType(int pc);
 extern int rtcCreateDataChannel(int pc, const char *label);
 extern void rtcSetDataChannelCallback(int pc, void (*dataChannelCallback)(int, void *));
 extern void rtcSetLocalDescriptionCallback(int pc,
@@ -45,6 +47,7 @@ extern void rtcSetUserPointer(int i, void *ptr);
 namespace rtc {
 
 using std::function;
+using std::optional;
 using std::shared_ptr;
 using std::vector;
 
@@ -104,6 +107,25 @@ PeerConnection::PeerConnection(const Configuration &config) {
 }
 
 PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
+
+optional<Description> PeerConnection::localDescription() const {
+	// TODO: sdp and type of the local description in acquired by two function calls.
+	// Find a way to reduce this into one call (probably multi-value return may work).
+	char *sdp = rtcLocalDescriptionSdp(mId);
+	char *type = rtcLocalDescriptionType(mId);
+	if (!sdp || !type) {
+		if (sdp)
+			free(sdp);
+		if (type)
+			free(type);
+		return std::nullopt;
+	}
+	// In the return value of rtcLocalDescription, type comes in front of sdp.
+	Description description(sdp, type);
+	free(sdp);
+	free(type);
+	return description;
+}
 
 shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label) {
 	return std::make_shared<DataChannel>(rtcCreateDataChannel(mId, label.c_str()));
