@@ -27,8 +27,8 @@
 extern "C" {
 extern int rtcCreatePeerConnection(const char **iceServers);
 extern void rtcDeletePeerConnection(int pc);
-extern char *rtcLocalDescriptionSdp(int pc);
-extern char *rtcLocalDescriptionType(int pc);
+extern char *rtcGetLocalDescription(int pc);
+extern char *rtcGetLocalDescriptionType(int pc);
 extern int rtcCreateDataChannel(int pc, const char *label);
 extern void rtcSetDataChannelCallback(int pc, void (*dataChannelCallback)(int, void *));
 extern void rtcSetLocalDescriptionCallback(int pc,
@@ -109,15 +109,11 @@ PeerConnection::PeerConnection(const Configuration &config) {
 PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
 
 optional<Description> PeerConnection::localDescription() const {
-	// TODO: sdp and type of the local description in acquired by two function calls.
-	// Find a way to reduce this into one call (probably multi-value return may work).
-	char *sdp = rtcLocalDescriptionSdp(mId);
-	char *type = rtcLocalDescriptionType(mId);
+	char *sdp = rtcGetLocalDescription(mId);
+	char *type = rtcGetLocalDescriptionType(mId);
 	if (!sdp || !type) {
-		if (sdp)
-			free(sdp);
-		if (type)
-			free(type);
+		free(sdp);
+		free(type);
 		return std::nullopt;
 	}
 	Description description(sdp, type);

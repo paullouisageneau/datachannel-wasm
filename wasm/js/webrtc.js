@@ -181,7 +181,7 @@
 			}
 		},
 
-		rtcLocalDescriptionSdp: function(pc) {
+		rtcGetLocalDescription: function(pc) {
 			if(!pc) return 0;
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			var localDescription = peerConnection.localDescription;
@@ -191,7 +191,7 @@
 			return sdp;
 		},
 
-		rtcLocalDescriptionType: function(pc) {
+		rtcGetLocalDescriptionType: function(pc) {
 			if(!pc) return 0;
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			var localDescription = peerConnection.localDescription;
