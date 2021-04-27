@@ -187,7 +187,7 @@
 			var localDescription = peerConnection.localDescription;
 			if(!localDescription) return 0;
 			var sdp = WEBRTC.allocUTF8FromString(localDescription.sdp);
-			// sdp should be freed later.
+			// sdp should be freed later in c++.
 			return sdp;
 		},
 
@@ -197,7 +197,7 @@
 			var localDescription = peerConnection.localDescription;
 			if(!localDescription) return 0;
 			var type = WEBRTC.allocUTF8FromString(localDescription.type);
-			// type should be freed later.
+			// type should be freed later in c++.
 			return type;
 		},
 

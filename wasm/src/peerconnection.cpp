@@ -120,7 +120,6 @@ optional<Description> PeerConnection::localDescription() const {
 			free(type);
 		return std::nullopt;
 	}
-	// In the return value of rtcLocalDescription, type comes in front of sdp.
 	Description description(sdp, type);
 	free(sdp);
 	free(type);
