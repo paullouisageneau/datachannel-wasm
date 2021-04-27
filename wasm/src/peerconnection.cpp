@@ -27,6 +27,8 @@
 extern "C" {
 extern int rtcCreatePeerConnection(const char **iceServers);
 extern void rtcDeletePeerConnection(int pc);
+extern char *rtcGetLocalDescription(int pc);
+extern char *rtcGetLocalDescriptionType(int pc);
 extern int rtcCreateDataChannel(int pc, const char *label);
 extern void rtcSetDataChannelCallback(int pc, void (*dataChannelCallback)(int, void *));
 extern void rtcSetLocalDescriptionCallback(int pc,
@@ -45,6 +47,7 @@ extern void rtcSetUserPointer(int i, void *ptr);
 namespace rtc {
 
 using std::function;
+using std::optional;
 using std::shared_ptr;
 using std::vector;
 
@@ -104,6 +107,20 @@ PeerConnection::PeerConnection(const Configuration &config) {
 }
 
 PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
+
+optional<Description> PeerConnection::localDescription() const {
+	char *sdp = rtcGetLocalDescription(mId);
+	char *type = rtcGetLocalDescriptionType(mId);
+	if (!sdp || !type) {
+		free(sdp);
+		free(type);
+		return std::nullopt;
+	}
+	Description description(sdp, type);
+	free(sdp);
+	free(type);
+	return description;
+}
 
 shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label) {
 	return std::make_shared<DataChannel>(rtcCreateDataChannel(mId, label.c_str()));

@@ -60,6 +60,8 @@ public:
 	PeerConnection(const Configuration &config);
 	~PeerConnection();
 
+	std::optional<Description> localDescription() const;
+
 	std::shared_ptr<DataChannel> createDataChannel(const string &label);
 
 	void setRemoteDescription(const Description &description);
