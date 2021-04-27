@@ -34,6 +34,9 @@ extern void rtcSetLocalDescriptionCallback(int pc,
                                                                        void *));
 extern void rtcSetLocalCandidateCallback(int pc, void (*candidateCallback)(const char *,
                                                                            const char *, void *));
+extern void rtcSetStateChangeCallback(int pc, void (*stateChangeCallback)(int, void *));
+extern void rtcSetGatheringStateChangeCallback(int pc, void (*gatheringStateChangeCallback)(int, void *));
+extern void rtcSetSignalingStateChangeCallback(int pc, void (*signalingStateChangeCallback)(int, void *));
 extern void rtcSetRemoteDescription(int pc, const char *sdp, const char *type);
 extern void rtcAddRemoteCandidate(int pc, const char *candidate, const char *mid);
 extern void rtcSetUserPointer(int i, void *ptr);
@@ -63,6 +66,24 @@ void PeerConnection::CandidateCallback(const char *candidate, const char *mid, v
 		p->triggerLocalCandidate(Candidate(candidate, mid));
 }
 
+void PeerConnection::StateChangeCallback(int state, void *ptr) {
+	PeerConnection *p = static_cast<PeerConnection *>(ptr);
+	if (p)
+		p->triggerStateChange(static_cast<State>(state));
+}
+
+void PeerConnection::GatheringStateChangeCallback(int state, void *ptr) {
+	PeerConnection *p = static_cast<PeerConnection *>(ptr);
+	if (p)
+		p->triggerGatheringStateChange(static_cast<GatheringState>(state));
+}
+
+void PeerConnection::SignalingStateChangeCallback(int state, void *ptr) {
+	PeerConnection *p = static_cast<PeerConnection *>(ptr);
+	if (p)
+		p->triggerSignalingStateChange(static_cast<SignalingState>(state));
+}
+
 PeerConnection::PeerConnection(const Configuration &config) {
 	vector<const char *> ptrs;
 	ptrs.reserve(config.iceServers.size());
@@ -77,6 +98,9 @@ PeerConnection::PeerConnection(const Configuration &config) {
 	rtcSetDataChannelCallback(mId, DataChannelCallback);
 	rtcSetLocalDescriptionCallback(mId, DescriptionCallback);
 	rtcSetLocalCandidateCallback(mId, CandidateCallback);
+	rtcSetStateChangeCallback(mId, StateChangeCallback);
+	rtcSetGatheringStateChangeCallback(mId, GatheringStateChangeCallback);
+	rtcSetSignalingStateChangeCallback(mId, SignalingStateChangeCallback);
 }
 
 PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
@@ -105,6 +129,18 @@ void PeerConnection::onLocalCandidate(function<void(const Candidate &)> callback
 	mLocalCandidateCallback = callback;
 }
 
+void PeerConnection::onStateChange(std::function<void(State state)> callback) {
+	mStateChangeCallback = callback;
+}
+
+void PeerConnection::onGatheringStateChange(std::function<void(GatheringState state)> callback) {
+	mGatheringStateChangeCallback = callback;
+}
+
+void PeerConnection::onSignalingStateChange(std::function<void(SignalingState state)> callback) {
+	mSignalingStateChangeCallback = callback;
+}
+
 void PeerConnection::triggerDataChannel(shared_ptr<DataChannel> dataChannel) {
 	if (mDataChannelCallback)
 		mDataChannelCallback(dataChannel);
@@ -120,6 +156,20 @@ void PeerConnection::triggerLocalCandidate(const Candidate &candidate) {
 		mLocalCandidateCallback(candidate);
 }
 
+void PeerConnection::triggerStateChange(State state) {
+	if (mStateChangeCallback)
+		mStateChangeCallback(state);
+}
+
+void PeerConnection::triggerGatheringStateChange(GatheringState state) {
+	if (mGatheringStateChangeCallback)
+		mGatheringStateChangeCallback(state);
+}
+
+void PeerConnection::triggerSignalingStateChange(SignalingState state) {
+	if (mSignalingStateChangeCallback)
+		mSignalingStateChangeCallback(state);
+}
 } // namespace rtc
 
 std::ostream &operator<<(std::ostream &out, const rtc::Candidate &candidate) {
