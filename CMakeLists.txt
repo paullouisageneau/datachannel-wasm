@@ -26,8 +26,6 @@ target_include_directories(datachannel-wasm PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/wasm/include/rtc)
 
 set(WASM_OPTS
-	"SHELL:-s WASM=1"
-	"SHELL:-s BINARYEN_METHOD=native-wasm"
 	"SHELL:-s EXPORTED_RUNTIME_METHODS=[\"dynCall\"]")
 
 target_compile_options(datachannel-wasm PUBLIC ${WASM_OPTS})
