@@ -160,10 +160,12 @@
 		rtcCreatePeerConnection: function(pIceServers, nIceServers) {
 			if(!window.RTCPeerConnection) return 0;
 			var iceServers = [];
+			console.log(`nIceServers: ${nIceServers}`);
 			for(var i = 0; i < nIceServers; ++i) {
 				var heap = Module['HEAPU32'];
 				var p = heap[pIceServers/heap.BYTES_PER_ELEMENT + i];
 				var url = UTF8ToString(p);
+				console.log(`url: ${url}`);
 				iceServers.push({
 					urls: [url],
 				});

@@ -25,8 +25,27 @@
 
 namespace rtc {
 
+struct IceServer {
+	enum class Type { Stun, Turn };
+	
+	// STUN
+	IceServer(string hostname_, uint16_t port_)
+		: hostname(std::move(hostname_)), port(port_), type(Type::Stun) {}
+	
+	// TURN
+	IceServer(string hostname_, uint16_t port_, string username_, string password_)
+		: hostname(std::move(hostname_)), port(port_), type(Type::Turn), username(std::move(username_)),
+      	  password(std::move(password_)) {}
+
+	string hostname;
+	uint16_t port;
+	Type type;
+	string username;
+	string password;
+};
+
 struct Configuration {
-	std::vector<string> iceServers;
+	std::vector<IceServer> iceServers;
 };
 
 } // namespace rtc

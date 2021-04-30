@@ -88,9 +88,20 @@ void PeerConnection::SignalingStateChangeCallback(int state, void *ptr) {
 }
 
 PeerConnection::PeerConnection(const Configuration &config) {
+	vector<string> urls;
+	for (const IceServer &iceServer : config.iceServers) {
+		string url = iceServer.type == IceServer::Type::Stun ? "stun:" : "turn:";
+		url += iceServer.hostname;
+		if (iceServer.port != 0) {
+			url += ":";
+			url += std::to_string(iceServer.port);
+		}
+		urls.push_back(url);
+	}
+
 	vector<const char *> ptrs;
 	ptrs.reserve(config.iceServers.size());
-	for (const string &s : config.iceServers)
+	for (const string &s : urls)
 		ptrs.push_back(s.c_str());
 	mId = rtcCreatePeerConnection(ptrs.data(), ptrs.size());
 	if (!mId)
