@@ -25,7 +25,7 @@
 #include <stdexcept>
 
 extern "C" {
-extern int rtcCreatePeerConnection(const char **iceServers);
+extern int rtcCreatePeerConnection(const char **pIceServers, int nIceServers);
 extern void rtcDeletePeerConnection(int pc);
 extern char *rtcGetLocalDescription(int pc);
 extern char *rtcGetLocalDescriptionType(int pc);
@@ -92,8 +92,7 @@ PeerConnection::PeerConnection(const Configuration &config) {
 	ptrs.reserve(config.iceServers.size());
 	for (const string &s : config.iceServers)
 		ptrs.push_back(s.c_str());
-	ptrs.push_back(nullptr);
-	mId = rtcCreatePeerConnection(ptrs.data());
+	mId = rtcCreatePeerConnection(ptrs.data(), ptrs.size());
 	if (!mId)
 		throw std::runtime_error("WebRTC not supported");
 
