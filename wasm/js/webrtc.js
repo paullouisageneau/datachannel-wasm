@@ -161,10 +161,11 @@
 			if(!window.RTCPeerConnection) return 0;
 			var iceServers = [];
 			for(var i = 0; i < nIceServers; ++i) {
-			  var heap = Module['HEAPU32'];
+				var heap = Module['HEAPU32'];
 				var p = heap[pIceServers/heap.BYTES_PER_ELEMENT + i];
+				var url = UTF8ToString(p);
 				iceServers.push({
-					urls: [UTF8ToString(p)],
+					urls: [url],
 				});
 			}
 			var config = {
