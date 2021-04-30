@@ -25,7 +25,7 @@
 #include <stdexcept>
 
 extern "C" {
-extern int rtcCreatePeerConnection(const char **pIceServers, int nIceServers);
+extern int rtcCreatePeerConnection(const char **pUrls, const char **pUsernames, const char **pPasswords, int nIceServers);
 extern void rtcDeletePeerConnection(int pc);
 extern char *rtcGetLocalDescription(int pc);
 extern char *rtcGetLocalDescriptionType(int pc);
@@ -99,11 +99,19 @@ PeerConnection::PeerConnection(const Configuration &config) {
 		urls.push_back(url);
 	}
 
-	vector<const char *> ptrs;
-	ptrs.reserve(config.iceServers.size());
+	vector<const char *> url_ptrs;
+	vector<const char *> username_ptrs;
+	vector<const char *> password_ptrs;
+	url_ptrs.reserve(config.iceServers.size());
+	username_ptrs.reserve(config.iceServers.size());
+	password_ptrs.reserve(config.iceServers.size());
 	for (const string &s : urls)
-		ptrs.push_back(s.c_str());
-	mId = rtcCreatePeerConnection(ptrs.data(), ptrs.size());
+		url_ptrs.push_back(s.c_str());
+	for (const IceServer &iceServer : config.iceServers) {
+		username_ptrs.push_back(iceServer.username.c_str());
+		password_ptrs.push_back(iceServer.password.c_str());
+	}
+	mId = rtcCreatePeerConnection(url_ptrs.data(), username_ptrs.data(), password_ptrs.data(), config.iceServers.size());
 	if (!mId)
 		throw std::runtime_error("WebRTC not supported");
 
