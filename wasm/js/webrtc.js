@@ -157,16 +157,28 @@
 			},
 		},
 
-		rtcCreatePeerConnection: function(pIceServers, nIceServers) {
+		rtcCreatePeerConnection: function(pUrls, pUsernames, pPasswords, nIceServers) {
 			if(!window.RTCPeerConnection) return 0;
 			var iceServers = [];
 			for(var i = 0; i < nIceServers; ++i) {
 				var heap = Module['HEAPU32'];
-				var p = heap[pIceServers/heap.BYTES_PER_ELEMENT + i];
-				var url = UTF8ToString(p);
-				iceServers.push({
-					urls: [url],
-				});
+				var pUrl = heap[pUrls/heap.BYTES_PER_ELEMENT + i];
+				var url = UTF8ToString(pUrl);
+				var pUsername = heap[pUsernames/heap.BYTES_PER_ELEMENT + i];
+				var username = UTF8ToString(pUsername);
+				var pPassword = heap[pPasswords/heap.BYTES_PER_ELEMENT + i];
+				var password = UTF8ToString(pPassword);
+				if (username === "") {
+					iceServers.push({
+						urls: [url],
+					});
+				} else {
+					iceServers.push({
+						urls: [url],
+						username: username,
+						credential: password
+					});
+				}
 			}
 			var config = {
 				iceServers: iceServers,
