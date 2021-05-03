@@ -89,6 +89,7 @@ void PeerConnection::SignalingStateChangeCallback(int state, void *ptr) {
 
 PeerConnection::PeerConnection(const Configuration &config) {
 	vector<string> urls;
+	urls.reserve(config.iceServers.size());
 	for (const IceServer &iceServer : config.iceServers) {
 		string url = iceServer.type == IceServer::Type::Stun ? "stun:" : "turn:";
 		url += iceServer.hostname;
