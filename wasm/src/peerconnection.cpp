@@ -29,7 +29,7 @@ extern int rtcCreatePeerConnection(const char **pUrls, const char **pUsernames, 
 extern void rtcDeletePeerConnection(int pc);
 extern char *rtcGetLocalDescription(int pc);
 extern char *rtcGetLocalDescriptionType(int pc);
-extern int rtcCreateDataChannel(int pc, const char *label);
+extern int rtcCreateDataChannel(int pc, const char *label, bool unreliable, bool unordered, int rexmit);
 extern void rtcSetDataChannelCallback(int pc, void (*dataChannelCallback)(int, void *));
 extern void rtcSetLocalDescriptionCallback(int pc,
                                            void (*descriptionCallback)(const char *, const char *,
@@ -142,7 +142,11 @@ optional<Description> PeerConnection::localDescription() const {
 }
 
 shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label, DataChannelInit init) {
-	return std::make_shared<DataChannel>(rtcCreateDataChannel(mId, label.c_str()));
+	return std::make_shared<DataChannel>(rtcCreateDataChannel(mId,
+															  label.c_str(),
+															  init.reliability.type != Reliability::Type::Reliable,
+															  init.reliability.unordered,
+															  init.reliability.rexmit));
 }
 
 void PeerConnection::setRemoteDescription(const Description &description) {
