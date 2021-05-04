@@ -24,12 +24,17 @@
 #include "datachannel.hpp"
 #include "description.hpp"
 #include "common.hpp"
+#include "reliability.hpp"
 
 #include <functional>
 #include <optional>
 #include <variant>
 
 namespace rtc {
+
+struct DataChannelInit {
+	Reliability reliability = {};
+};
 
 class PeerConnection final {
 public:
@@ -62,7 +67,7 @@ public:
 
 	std::optional<Description> localDescription() const;
 
-	std::shared_ptr<DataChannel> createDataChannel(const string &label);
+	std::shared_ptr<DataChannel> createDataChannel(const string &label, DataChannelInit init = {});
 
 	void setRemoteDescription(const Description &description);
 	void addRemoteCandidate(const Candidate &candidate);

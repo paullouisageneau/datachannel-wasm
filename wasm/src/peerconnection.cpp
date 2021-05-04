@@ -141,7 +141,7 @@ optional<Description> PeerConnection::localDescription() const {
 	return description;
 }
 
-shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label) {
+shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label, DataChannelInit init) {
 	return std::make_shared<DataChannel>(rtcCreateDataChannel(mId, label.c_str()));
 }
 
