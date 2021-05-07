@@ -94,7 +94,7 @@
 			},
 
 			handleConnectionStateChange: function(peerConnection, connectionState) {
-				var stateChangeCallback =  peerConnection.rtcStateChangeCallback;
+				var stateChangeCallback = peerConnection.rtcStateChangeCallback;
 				var userPointer = peerConnection.rtcUserPointer || 0;
 				switch(connectionState) {
 					case 'new':
@@ -214,11 +214,16 @@
 			return type;
 		},
 
-		rtcCreateDataChannel: function(pc, pLabel) {
+		rtcCreateDataChannel: function(pc, pLabel, unreliable, unordered, rexmit) {
 			if(!pc) return 0;
 			var label = UTF8ToString(pLabel);
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
-			var channel = peerConnection.createDataChannel(label);
+			var datachannelInit = {};
+			if (unordered)
+				datachannelInit['ordered'] = false;
+			if (unreliable)
+				datachannelInit['maxRetransmits'] = rexmit;
+			var channel = peerConnection.createDataChannel(label, datachannelInit);
 			return WEBRTC.registerDataChannel(channel);
 		},
 
