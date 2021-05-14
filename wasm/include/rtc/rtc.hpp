@@ -16,6 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef RTC_H
+#define RTC_H
+
 #include "common.hpp"
 
 #include "datachannel.hpp"
@@ -29,3 +32,5 @@ inline void Preload() {}
 inline void Cleanup() {}
 
 } // namespace rtc
+
+#endif // RTC_DESCRIPTION_H
