@@ -33,4 +33,4 @@ inline void Cleanup() {}
 
 } // namespace rtc
 
-#endif // RTC_DESCRIPTION_H
+#endif // RTC_H
