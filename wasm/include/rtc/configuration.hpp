@@ -26,22 +26,29 @@
 namespace rtc {
 
 struct IceServer {
-	enum class Type { Stun, Turn };
-	
+	enum class Type { Stun, Turn, Dummy };
+	enum class RelayType { TurnUdp, TurnTcp, TurnTls };
+
+	// Note: Contrary to libdatachannel, the URL constructor does not parse the URL.
+	// Instead, it creates a Dummy IceServer to pass the URL as-is to the browser.
+	IceServer(const string &url);
+
 	// STUN
-	IceServer(string hostname_, uint16_t port_)
-		: hostname(std::move(hostname_)), port(port_), type(Type::Stun) {}
-	
+	IceServer(string hostname_, uint16_t port_);
+	IceServer(string hostname_, string service_);
+
 	// TURN
-	IceServer(string hostname_, uint16_t port_, string username_, string password_)
-		: hostname(std::move(hostname_)), port(port_), type(Type::Turn), username(std::move(username_)),
-      	  password(std::move(password_)) {}
+	IceServer(string hostname_, uint16_t port, string username_, string password_,
+	          RelayType relayType_ = RelayType::TurnUdp);
+	IceServer(string hostname_, string service_, string username_, string password_,
+	          RelayType relayType_ = RelayType::TurnUdp);
 
 	string hostname;
 	uint16_t port;
 	Type type;
 	string username;
 	string password;
+	RelayType relayType;
 };
 
 struct Configuration {
