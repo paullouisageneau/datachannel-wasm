@@ -29,7 +29,8 @@ struct IceServer {
 	enum class Type { Stun, Turn, Dummy };
 	enum class RelayType { TurnUdp, TurnTcp, TurnTls };
 
-	// Any type
+	// Note: Contrary to libdatachannel, the URL constructor does not parse the URL.
+	// Instead, it creates a Dummy IceServer to pass the URL as-is to the browser.
 	IceServer(const string &url);
 
 	// STUN
