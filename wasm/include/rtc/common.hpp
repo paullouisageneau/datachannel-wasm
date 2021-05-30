@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <variant>
 #include <vector>
@@ -33,7 +34,6 @@ using std::string;
 using binary = std::vector<byte>;
 using message_variant = std::variant<binary, string>;
 
-using std::function;
 using std::nullopt;
 
 template <class... Ts> struct overloaded : Ts... { using Ts::operator()...; };

@@ -25,11 +25,13 @@
 #include <stdexcept>
 
 extern "C" {
-extern int rtcCreatePeerConnection(const char **pUrls, const char **pUsernames, const char **pPasswords, int nIceServers);
+extern int rtcCreatePeerConnection(const char **pUrls, const char **pUsernames,
+                                   const char **pPasswords, int nIceServers);
 extern void rtcDeletePeerConnection(int pc);
 extern char *rtcGetLocalDescription(int pc);
 extern char *rtcGetLocalDescriptionType(int pc);
-extern int rtcCreateDataChannel(int pc, const char *label, bool unreliable, bool unordered, int rexmit);
+extern int rtcCreateDataChannel(int pc, const char *label, bool unreliable, bool unordered,
+                                int rexmit);
 extern void rtcSetDataChannelCallback(int pc, void (*dataChannelCallback)(int, void *));
 extern void rtcSetLocalDescriptionCallback(int pc,
                                            void (*descriptionCallback)(const char *, const char *,
@@ -37,8 +39,10 @@ extern void rtcSetLocalDescriptionCallback(int pc,
 extern void rtcSetLocalCandidateCallback(int pc, void (*candidateCallback)(const char *,
                                                                            const char *, void *));
 extern void rtcSetStateChangeCallback(int pc, void (*stateChangeCallback)(int, void *));
-extern void rtcSetGatheringStateChangeCallback(int pc, void (*gatheringStateChangeCallback)(int, void *));
-extern void rtcSetSignalingStateChangeCallback(int pc, void (*signalingStateChangeCallback)(int, void *));
+extern void rtcSetGatheringStateChangeCallback(int pc,
+                                               void (*gatheringStateChangeCallback)(int, void *));
+extern void rtcSetSignalingStateChangeCallback(int pc,
+                                               void (*signalingStateChangeCallback)(int, void *));
 extern void rtcSetRemoteDescription(int pc, const char *sdp, const char *type);
 extern void rtcAddRemoteCandidate(int pc, const char *candidate, const char *mid);
 extern void rtcSetUserPointer(int i, void *ptr);
@@ -91,11 +95,23 @@ PeerConnection::PeerConnection(const Configuration &config) {
 	vector<string> urls;
 	urls.reserve(config.iceServers.size());
 	for (const IceServer &iceServer : config.iceServers) {
-		string url = iceServer.type == IceServer::Type::Stun ? "stun:" : "turn:";
-		url += iceServer.hostname;
-		if (iceServer.port != 0) {
-			url += ":";
-			url += std::to_string(iceServer.port);
+		string url;
+		if (iceServer.type == IceServer::Type::Dummy) {
+			url = iceServer.hostname;
+		} else {
+			string scheme =
+			    iceServer.type == IceServer::Type::Turn
+			        ? (iceServer.relayType == IceServer::RelayType::TurnTls ? "turns" : "turn")
+			        : "stun";
+
+			url += scheme + ":" + iceServer.hostname;
+
+			if (iceServer.port != 0)
+				url += string(":") + std::to_string(iceServer.port);
+
+			if (iceServer.type == IceServer::Type::Turn &&
+			    iceServer.relayType != IceServer::RelayType::TurnUdp)
+				url += "?transport=tcp";
 		}
 		urls.push_back(url);
 	}
@@ -112,7 +128,8 @@ PeerConnection::PeerConnection(const Configuration &config) {
 		username_ptrs.push_back(iceServer.username.c_str());
 		password_ptrs.push_back(iceServer.password.c_str());
 	}
-	mId = rtcCreatePeerConnection(url_ptrs.data(), username_ptrs.data(), password_ptrs.data(), config.iceServers.size());
+	mId = rtcCreatePeerConnection(url_ptrs.data(), username_ptrs.data(), password_ptrs.data(),
+	                              config.iceServers.size());
 	if (!mId)
 		throw std::runtime_error("WebRTC not supported");
 
@@ -141,12 +158,11 @@ optional<Description> PeerConnection::localDescription() const {
 	return description;
 }
 
-shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label, DataChannelInit init) {
-	return std::make_shared<DataChannel>(rtcCreateDataChannel(mId,
-															  label.c_str(),
-															  init.reliability.type != Reliability::Type::Reliable,
-															  init.reliability.unordered,
-															  init.reliability.rexmit));
+shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label,
+                                                          DataChannelInit init) {
+	return std::make_shared<DataChannel>(rtcCreateDataChannel(
+	    mId, label.c_str(), init.reliability.type != Reliability::Type::Reliable,
+	    init.reliability.unordered, init.reliability.rexmit));
 }
 
 void PeerConnection::setRemoteDescription(const Description &description) {
@@ -169,15 +185,15 @@ void PeerConnection::onLocalCandidate(function<void(const Candidate &)> callback
 	mLocalCandidateCallback = callback;
 }
 
-void PeerConnection::onStateChange(std::function<void(State state)> callback) {
+void PeerConnection::onStateChange(function<void(State state)> callback) {
 	mStateChangeCallback = callback;
 }
 
-void PeerConnection::onGatheringStateChange(std::function<void(GatheringState state)> callback) {
+void PeerConnection::onGatheringStateChange(function<void(GatheringState state)> callback) {
 	mGatheringStateChangeCallback = callback;
 }
 
-void PeerConnection::onSignalingStateChange(std::function<void(SignalingState state)> callback) {
+void PeerConnection::onSignalingStateChange(function<void(SignalingState state)> callback) {
 	mSignalingStateChangeCallback = callback;
 }
 
