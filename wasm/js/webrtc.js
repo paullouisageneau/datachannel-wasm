@@ -46,13 +46,13 @@
 					if(evt.candidate && evt.candidate.candidate)
 					  WEBRTC.handleCandidate(peerConnection, evt.candidate);
 				};
-				peerConnection.onconnectionstatechange = function(evt) {
+				peerConnection.onconnectionstatechange = function() {
 					WEBRTC.handleConnectionStateChange(peerConnection, peerConnection.connectionState)
 				};
 				peerConnection.onicegatheringstatechange = function() {
-					WEBRTC.handleIceGatheringStateChange(peerConnection, peerConnection.iceGatheringState)
+					WEBRTC.handleGatheringStateChange(peerConnection, peerConnection.iceGatheringState)
 				};
-				peerConnection.onsignalingstatechange = function(evt) {
+				peerConnection.onsignalingstatechange = function() {
 					WEBRTC.handleSignalingStateChange(peerConnection, peerConnection.signalingState)
 				};
 				return pc;
@@ -94,65 +94,52 @@
 			},
 
 			handleConnectionStateChange: function(peerConnection, connectionState) {
-				var stateChangeCallback = peerConnection.rtcStateChangeCallback;
-				var userPointer = peerConnection.rtcUserPointer || 0;
-				switch(connectionState) {
-					case 'new':
-						Module['dynCall']('vii', stateChangeCallback, [0, userPointer]);
-						break;
-					case 'connecting':
-						Module['dynCall']('vii', stateChangeCallback, [1, userPointer]);
-						break;
-					case 'connected':
-						Module['dynCall']('vii', stateChangeCallback, [2, userPointer]);
-						break;
-					case 'disconnected':
-						Module['dynCall']('vii', stateChangeCallback, [3, userPointer]);
-						break;
-					case 'failed':
-						Module['dynCall']('vii', stateChangeCallback, [4, userPointer]);
-						break;
-					case 'closed':
-						Module['dynCall']('vii', stateChangeCallback, [5, userPointer]);
-						break;
+				if(peerConnection.rtcUserDeleted) return;
+				if(!peerConnection.rtcStateChangeCallback) return;
+				var map = {
+					'new': 0,
+					'connecting': 1,
+					'connected': 2,
+					'disconnected': 3,
+					'failed': 4,
+					'closed': 5,
+				};
+				if(connectionState in map) {
+					var stateChangeCallback = peerConnection.rtcStateChangeCallback;
+					var userPointer = peerConnection.rtcUserPointer || 0;
+					Module['dynCall']('vii', stateChangeCallback, [map[connectionState], userPointer]);
 				}
 			},
 
-			handleIceGatheringStateChange: function(peerConnection, iceGatheringState) {
-				var gatheringStateChangeCallback = peerConnection.rtcGatheringStateChangeCallback;
-				var userPointer = peerConnection.rtcUserPointer || 0;
-				switch(iceGatheringState) {
-					case "new":
-						Module['dynCall']('vii', gatheringStateChangeCallback, [0, userPointer]);
-						break;
-					case "gathering":
-						Module['dynCall']('vii', gatheringStateChangeCallback, [1, userPointer]);
-						break;
-					case "complete":
-						Module['dynCall']('vii', gatheringStateChangeCallback, [2, userPointer]);
-						break;
+			handleGatheringStateChange: function(peerConnection, iceGatheringState) {
+				if(peerConnection.rtcUserDeleted) return;
+				if(!peerConnection.rtcGatheringStateChangeCallback) return;
+				var map = {
+					'new': 0,
+					'gathering': 1,
+					'complete': 2,
+				};
+				if(iceGatheringState in map) {
+					var gatheringStateChangeCallback = peerConnection.rtcGatheringStateChangeCallback;
+					var userPointer = peerConnection.rtcUserPointer || 0;
+					Module['dynCall']('vii', gatheringStateChangeCallback, [map[iceGatheringState], userPointer]);
 				}
 			},
 
 			handleSignalingStateChange: function(peerConnection, signalingState) {
-				var signalingStateChangeCallback = peerConnection.rtcSignalingStateChangeCallback;
-				var userPointer = peerConnection.rtcUserPointer || 0;
-				switch(signalingState) {
-					case "stable":
-						Module['dynCall']('vii', signalingStateChangeCallback, [0, userPointer]);
-						break;
-					case "have-local-offer":
-						Module['dynCall']('vii', signalingStateChangeCallback, [1, userPointer]);
-						break;
-					case "have-remote-offer":
-						Module['dynCall']('vii', signalingStateChangeCallback, [2, userPointer]);
-						break;
-					case "have-local-pranswer":
-						Module['dynCall']('vii', signalingStateChangeCallback, [3, userPointer]);
-						break;
-					case "have-remote-pranswer":
-						Module['dynCall']('vii', signalingStateChangeCallback, [4, userPointer]);
-						break;
+				if(peerConnection.rtcUserDeleted) return;
+				if(!peerConnection.rtcSignalingStateChangeCallback) return;
+				var map = {
+					'stable': 0,
+					'have-local-offer': 1,
+					'have-remote-offer': 2,
+					'have-local-pranswer': 3,
+					'have-remote-pranswer': 4,
+				};
+				if(signalingState in map) {
+					var signalingStateChangeCallback = peerConnection.rtcSignalingStateChangeCallback;
+					var userPointer = peerConnection.rtcUserPointer || 0;
+					Module['dynCall']('vii', signalingStateChangeCallback, [map[signalingState], userPointer]);
 				}
 			},
 		},
