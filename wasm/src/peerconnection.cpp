@@ -51,8 +51,6 @@ extern void rtcSetUserPointer(int i, void *ptr);
 namespace rtc {
 
 using std::function;
-using std::optional;
-using std::shared_ptr;
 using std::vector;
 
 void PeerConnection::DataChannelCallback(int dc, void *ptr) {

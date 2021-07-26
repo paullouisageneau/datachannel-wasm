@@ -26,8 +26,8 @@
 namespace rtc {
 
 struct IceServer {
-	enum class Type { Stun, Turn, Dummy };
-	enum class RelayType { TurnUdp, TurnTcp, TurnTls };
+	enum class Type : int { Stun = 0, Turn, Dummy };
+	enum class RelayType : int { TurnUdp = 0, TurnTcp, TurnTls };
 
 	// Note: Contrary to libdatachannel, the URL constructor does not parse the URL.
 	// Instead, it creates a Dummy IceServer to pass the URL as-is to the browser.

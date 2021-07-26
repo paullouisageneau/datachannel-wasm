@@ -39,7 +39,6 @@ extern void rtcSetUserPointer(int i, void *ptr);
 namespace rtc {
 
 using std::function;
-using std::shared_ptr;
 
 void DataChannel::OpenCallback(void *ptr) {
 	DataChannel *d = static_cast<DataChannel *>(ptr);

@@ -65,14 +65,14 @@ public:
 	PeerConnection(const Configuration &config);
 	~PeerConnection();
 
-	std::optional<Description> localDescription() const;
+	optional<Description> localDescription() const;
 
-	std::shared_ptr<DataChannel> createDataChannel(const string &label, DataChannelInit init = {});
+	shared_ptr<DataChannel> createDataChannel(const string &label, DataChannelInit init = {});
 
 	void setRemoteDescription(const Description &description);
 	void addRemoteCandidate(const Candidate &candidate);
 
-	void onDataChannel(std::function<void(std::shared_ptr<DataChannel>)> callback);
+	void onDataChannel(std::function<void(shared_ptr<DataChannel>)> callback);
 	void onLocalDescription(std::function<void(const Description &description)> callback);
 	void onLocalCandidate(std::function<void(const Candidate &candidate)> callback);
 	void onStateChange(std::function<void(State state)> callback);
@@ -80,14 +80,14 @@ public:
 	void onSignalingStateChange(std::function<void(SignalingState state)> callback);
 
 protected:
-	void triggerDataChannel(std::shared_ptr<DataChannel> dataChannel);
+	void triggerDataChannel(shared_ptr<DataChannel> dataChannel);
 	void triggerLocalDescription(const Description &description);
 	void triggerLocalCandidate(const Candidate &candidate);
 	void triggerStateChange(State state);
 	void triggerGatheringStateChange(GatheringState state);
 	void triggerSignalingStateChange(SignalingState state);
 
-	std::function<void(std::shared_ptr<DataChannel>)> mDataChannelCallback;
+	std::function<void(shared_ptr<DataChannel>)> mDataChannelCallback;
 	std::function<void(const Description &description)> mLocalDescriptionCallback;
 	std::function<void(const Candidate &candidate)> mLocalCandidateCallback;
 	std::function<void(State candidate)> mStateChangeCallback;

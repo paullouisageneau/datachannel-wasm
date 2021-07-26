@@ -30,11 +30,22 @@
 namespace rtc {
 
 using std::byte;
+using std::nullopt;
+using std::optional;
+using std::shared_ptr;
 using std::string;
+using std::unique_ptr;
+using std::variant;
+using std::weak_ptr;
+
 using binary = std::vector<byte>;
 using message_variant = std::variant<binary, string>;
 
-using std::nullopt;
+using std::size_t;
+using std::uint16_t;
+using std::uint32_t;
+using std::uint64_t;
+using std::uint8_t;
 
 template <class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
