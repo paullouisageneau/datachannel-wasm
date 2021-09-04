@@ -1,5 +1,7 @@
 # datachannel-wasm - C++ WebRTC Data Channels for WebAssembly in browsers
 
+[![Join the chat at https://gitter.im/libdatachannel/datachannel-wasm](https://badges.gitter.im/libdatachannel/datachannel-wasm.svg)](https://gitter.im/libdatachannel/datachannel-wasm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 datachannel-wasm is a C++ WebRTC Data Channels and WebSocket wrapper for [Emscripten](https://emscripten.org/) compatible with [libdatachannel](https://github.com/paullouisageneau/libdatachannel).
 
 datachannel-wasm exposes the same API as [libdatachannel](https://github.com/paullouisageneau/libdatachannel), and therefore allows to compile the same C++ code using Data Channels and WebSockets to WebAssembly for browsers in addition to native targets supported by libdatachannel. The interface is only a subset of the one of [libdatachannel](https://github.com/paullouisageneau/libdatachannel), in particular, tracks and media transport are not supported. See what is available in [wasm/include](https://github.com/paullouisageneau/datachannel-wasm/tree/master/wasm/include/rtc).
