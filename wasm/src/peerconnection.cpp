@@ -251,10 +251,3 @@ void PeerConnection::triggerSignalingStateChange(SignalingState state) {
 }
 } // namespace rtc
 
-std::ostream &operator<<(std::ostream &out, const rtc::Candidate &candidate) {
-	return out << std::string(candidate);
-}
-
-std::ostream &operator<<(std::ostream &out, const rtc::Description &description) {
-	return out << std::string(description);
-}

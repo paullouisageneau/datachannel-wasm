@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2020 Paul-Louis Ageneau
+ * Copyright (c) 2017-2021 Paul-Louis Ageneau
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,38 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef RTC_DESCRIPTION_H
-#define RTC_DESCRIPTION_H
-
-#include "common.hpp"
-
-#include <iostream>
+#include "candidate.hpp"
 
 namespace rtc {
 
-class Description {
-public:
-	enum class Type { Unspec, Offer, Answer, Pranswer, Rollback };
+Candidate::Candidate(const string &candidate, const string &mid) : mCandidate(candidate), mMid(mid) {}
 
-	Description(const string &sdp, Type type);
-	Description(const string &sdp, string typeString);
+string Candidate::candidate() const { return mCandidate; }
 
-	Type type() const;
-	string typeString() const;
+string Candidate::mid() const { return mMid; }
 
-	operator string() const;
-
-	static Type stringToType(const string &typeString);
-	static string typeToString(Type type);
-
-private:
-	string mSdp;
-	string mType;
-};
+Candidate::operator string() const { return "a=" + mCandidate; }
 
 } // namespace rtc
 
-std::ostream &operator<<(std::ostream &out, const rtc::Description &description);
-std::ostream &operator<<(std::ostream &out, rtc::Description::Type type);
+std::ostream &operator<<(std::ostream &out, const rtc::Candidate &candidate) {
+	return out << std::string(candidate);
+}
 
-#endif // RTC_DESCRIPTION_H

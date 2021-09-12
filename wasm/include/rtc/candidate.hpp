@@ -27,10 +27,10 @@ namespace rtc {
 
 class Candidate {
 public:
-	Candidate(const string &candidate, const string &mid) : mCandidate(candidate), mMid(mid) {}
-	string candidate() const { return mCandidate; }
-	string mid() const { return mMid; }
-	operator string() const { return "a=" + mCandidate; }
+	Candidate(const string &candidate, const string &mid);
+	string candidate() const;
+	string mid() const;
+	operator string() const;
 
 private:
 	string mCandidate;

@@ -18,7 +18,6 @@
 
 #include "description.hpp"
 
-#include <iostream>
 #include <unordered_map>
 
 namespace rtc {

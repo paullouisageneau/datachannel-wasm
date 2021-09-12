@@ -10,6 +10,7 @@ endif()
 
 set(WASM_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/wasm/src)
 set(DATACHANNELS_SRC
+	${WASM_SRC_DIR}/candidate.cpp
 	${WASM_SRC_DIR}/channel.cpp
 	${WASM_SRC_DIR}/configuration.cpp
 	${WASM_SRC_DIR}/description.cpp
