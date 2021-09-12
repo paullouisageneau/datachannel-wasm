@@ -12,6 +12,7 @@ set(WASM_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/wasm/src)
 set(DATACHANNELS_SRC
 	${WASM_SRC_DIR}/channel.cpp
 	${WASM_SRC_DIR}/configuration.cpp
+	${WASM_SRC_DIR}/description.cpp
 	${WASM_SRC_DIR}/datachannel.cpp
 	${WASM_SRC_DIR}/peerconnection.cpp
 	${WASM_SRC_DIR}/websocket.cpp)

@@ -21,15 +21,22 @@
 
 #include "common.hpp"
 
-#include <iostream>
-
 namespace rtc {
 
 class Description {
 public:
-	Description(const string &sdp, const string &type) : mSdp(sdp), mType(type) {}
-	string typeString() const { return mType; }
-	operator string() const { return mSdp; }
+	enum class Type { Unspec, Offer, Answer, Pranswer, Rollback };
+
+	Description(const string &sdp, Type type);
+	Description(const string &sdp, string typeString);
+
+	Type type() const;
+	string typeString() const;
+
+	operator string() const;
+
+	static Type stringToType(const string &typeString);
+	static string typeToString(Type type);
 
 private:
 	string mSdp;
@@ -39,5 +46,6 @@ private:
 } // namespace rtc
 
 std::ostream &operator<<(std::ostream &out, const rtc::Description &description);
+std::ostream &operator<<(std::ostream &out, rtc::Description::Type type);
 
 #endif // RTC_DESCRIPTION_H
