@@ -30,6 +30,8 @@ extern int rtcCreatePeerConnection(const char **pUrls, const char **pUsernames,
 extern void rtcDeletePeerConnection(int pc);
 extern char *rtcGetLocalDescription(int pc);
 extern char *rtcGetLocalDescriptionType(int pc);
+extern char *rtcGetRemoteDescription(int pc);
+extern char *rtcGetRemoteDescriptionType(int pc);
 extern int rtcCreateDataChannel(int pc, const char *label, bool unreliable, bool unordered,
                                 int rexmit);
 extern void rtcSetDataChannelCallback(int pc, void (*dataChannelCallback)(int, void *));
@@ -142,9 +144,29 @@ PeerConnection::PeerConnection(const Configuration &config) {
 
 PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
 
+PeerConnection::State PeerConnection::state() const { return mState; }
+
+PeerConnection::GatheringState PeerConnection::gatheringState() const { return mGatheringState; }
+
+PeerConnection::SignalingState PeerConnection::signalingState() const { return mSignalingState; }
+
 optional<Description> PeerConnection::localDescription() const {
 	char *sdp = rtcGetLocalDescription(mId);
 	char *type = rtcGetLocalDescriptionType(mId);
+	if (!sdp || !type) {
+		free(sdp);
+		free(type);
+		return std::nullopt;
+	}
+	Description description(sdp, type);
+	free(sdp);
+	free(type);
+	return description;
+}
+
+optional<Description> PeerConnection::remoteDescription() const {
+	char *sdp = rtcGetRemoteDescription(mId);
+	char *type = rtcGetRemoteDescriptionType(mId);
 	if (!sdp || !type) {
 		free(sdp);
 		free(type);
@@ -211,16 +233,19 @@ void PeerConnection::triggerLocalCandidate(const Candidate &candidate) {
 }
 
 void PeerConnection::triggerStateChange(State state) {
+	mState = state;
 	if (mStateChangeCallback)
 		mStateChangeCallback(state);
 }
 
 void PeerConnection::triggerGatheringStateChange(GatheringState state) {
+	mGatheringState = state;
 	if (mGatheringStateChangeCallback)
 		mGatheringStateChangeCallback(state);
 }
 
 void PeerConnection::triggerSignalingStateChange(SignalingState state) {
+	mSignalingState = state;
 	if (mSignalingStateChangeCallback)
 		mSignalingStateChangeCallback(state);
 }

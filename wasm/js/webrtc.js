@@ -201,6 +201,26 @@
 			return type;
 		},
 
+    rtcGetRemoteDescription: function(pc) {
+			if(!pc) return 0;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			var remoteDescription = peerConnection.remoteDescription;
+			if(!remoteDescription) return 0;
+			var sdp = WEBRTC.allocUTF8FromString(remoteDescription.sdp);
+			// sdp should be freed later in c++.
+			return sdp;
+		},
+
+		rtcGetRemoteDescriptionType: function(pc) {
+			if(!pc) return 0;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			var remoteDescription = peerConnection.remoteDescription;
+			if(!remoteDescription) return 0;
+			var type = WEBRTC.allocUTF8FromString(remoteDescription.type);
+			// type should be freed later in c++.
+			return type;
+		},
+
 		rtcCreateDataChannel: function(pc, pLabel, unreliable, unordered, rexmit) {
 			if(!pc) return 0;
 			var label = UTF8ToString(pLabel);

@@ -59,13 +59,17 @@ public:
 		HaveRemoteOffer = 2,
 		HaveLocalPranswer = 3,
 		HaveRemotePranswer = 4,
-	} rtcSignalingState;
+	};
 
 	PeerConnection();
 	PeerConnection(const Configuration &config);
 	~PeerConnection();
 
+	State state() const;
+	GatheringState gatheringState() const;
+	SignalingState signalingState() const;
 	optional<Description> localDescription() const;
+	optional<Description> remoteDescription() const;
 
 	shared_ptr<DataChannel> createDataChannel(const string &label, DataChannelInit init = {});
 
@@ -96,6 +100,9 @@ protected:
 
 private:
 	int mId;
+	State mState = State::New;
+    GatheringState mGatheringState = GatheringState::New;
+    SignalingState mSignalingState = SignalingState::Stable;
 
 	static void DataChannelCallback(int dc, void *ptr);
 	static void DescriptionCallback(const char *sdp, const char *type, void *ptr);
