@@ -34,9 +34,9 @@
 				var pc = WEBRTC.nextId++;
 				WEBRTC.peerConnectionsMap[pc] = peerConnection;
 				peerConnection.onnegotiationneeded = function() {
-					peerConnection.setLocalDescription() // implicit description
-						.then(function(description) {
-							return WEBRTC.handleDescription(peerConnection, description);
+					peerConnection.createOffer()
+						.then(function(offer) {
+							return WEBRTC.handleDescription(peerConnection, offer);
 						})
 						.catch(function(err) {
 							console.error(err);
@@ -66,16 +66,19 @@
 			},
 
 			handleDescription: function(peerConnection, description) {
-					if(peerConnection.rtcUserDeleted) return;
-					if(!peerConnection.rtcDescriptionCallback) return;
-					var desc = peerConnection.localDescription;
-					var pSdp = WEBRTC.allocUTF8FromString(desc.sdp);
-					var pType = WEBRTC.allocUTF8FromString(desc.type);
-					var callback =  peerConnection.rtcDescriptionCallback;
-					var userPointer = peerConnection.rtcUserPointer || 0;
-					Module['dynCall']('viii', callback, [pSdp, pType, userPointer]);
-					_free(pSdp);
-					_free(pType);
+				return peerConnection.setLocalDescription(description)
+					.then(function() {
+						if(peerConnection.rtcUserDeleted) return;
+						if(!peerConnection.rtcDescriptionCallback) return;
+						var desc = peerConnection.localDescription;
+						var pSdp = WEBRTC.allocUTF8FromString(desc.sdp);
+						var pType = WEBRTC.allocUTF8FromString(desc.type);
+						var callback =  peerConnection.rtcDescriptionCallback;
+						var userPointer = peerConnection.rtcUserPointer || 0;
+						Module['dynCall']('viii', callback, [pSdp, pType, userPointer]);
+						_free(pSdp);
+						_free(pType);
+					});
 			},
 
 			handleCandidate: function(peerConnection, candidate) {
@@ -290,9 +293,9 @@
 				.then(function() {
 					if(peerConnection.rtcUserDeleted) return;
 					if(description.type == 'offer') {
-						peerConnection.setLocalDescription()
-							.then(function(localDescription) {
-								return WEBRTC.handleDescription(peerConnection, localDescription);
+						peerConnection.createAnswer()
+							.then(function(answer) {
+								return WEBRTC.handleDescription(peerConnection, answer);
 							})
 							.catch(function(err) {
 								console.error(err);
