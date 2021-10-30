@@ -102,7 +102,7 @@
 
 		wsSendMessage: function(ws, pBuffer, size) {
 			var webSocket = WEBSOCKET.map[ws];
-			if(webSocket.readyState != 1) return 0;
+			if(webSocket.readyState != 1) return -1;
 			if(size >= 0) {
 				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 				webSocket.send(heapBytes);

@@ -42,10 +42,8 @@ using std::function;
 
 void DataChannel::OpenCallback(void *ptr) {
 	DataChannel *d = static_cast<DataChannel *>(ptr);
-	if (d) {
-		d->mConnected = true;
+	if (d)
 		d->triggerOpen();
-	}
 }
 
 void DataChannel::ErrorCallback(const char *error, void *ptr) {
@@ -142,6 +140,11 @@ void DataChannel::setBufferedAmountLowThreshold(size_t amount) {
 		return;
 
 	rtcSetBufferedAmountLowThreshold(mId, int(amount));
+}
+
+void DataChannel::triggerOpen() {
+	mConnected = true;
+	Channel::triggerOpen();
 }
 
 } // namespace rtc

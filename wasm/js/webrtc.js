@@ -396,7 +396,7 @@
 
 		rtcSendMessage: function(dc, pBuffer, size) {
 			var dataChannel = WEBRTC.dataChannelsMap[dc];
-			if(dataChannel.readyState != 'open') return 0;
+			if(dataChannel.readyState != 'open') return -1;
 			if(size >= 0) {
 				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 				dataChannel.send(heapBytes);

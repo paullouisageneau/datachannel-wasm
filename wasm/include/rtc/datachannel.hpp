@@ -41,6 +41,8 @@ public:
 	void setBufferedAmountLowThreshold(size_t amount) override;
 
 private:
+	void triggerOpen() override;
+
 	int mId;
 	string mLabel;
 	bool mConnected;

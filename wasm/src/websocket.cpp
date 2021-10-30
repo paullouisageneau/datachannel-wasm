@@ -37,10 +37,8 @@ namespace rtc {
 
 void WebSocket::OpenCallback(void *ptr) {
 	WebSocket *w = static_cast<WebSocket *>(ptr);
-	if (w) {
-		w->mConnected = true;
+	if (w)
 		w->triggerOpen();
-	}
 }
 
 void WebSocket::ErrorCallback(const char *error, void *ptr) {
