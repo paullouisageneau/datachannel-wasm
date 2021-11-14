@@ -78,7 +78,7 @@
 			webSocket.onmessage = function(evt) {
 				if(webSocket.rtcUserDeleted) return;
 				if(typeof evt.data == 'string') {
-					var pStr = WEBRTC.allocUTF8FromString(evt.data);
+					var pStr = WEBSOCKET.allocUTF8FromString(evt.data);
 					var userPointer = webSocket.rtcUserPointer || 0;
 					Module['dynCall']('viii', messageCallback, [pStr, -1, userPointer]);
 					_free(pStr);
