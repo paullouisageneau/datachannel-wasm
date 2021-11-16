@@ -4,6 +4,8 @@ project(datachannel-wasm
 	VERSION 0.1.0
 	LANGUAGES CXX)
 
+option(EXPORT_DYNCALL "Export runtime method dynCall" ON)
+
 if(NOT CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	message(FATAL_ERROR "datachannel-wasm must be compiled with Emscripten.")
 endif()
@@ -28,11 +30,13 @@ target_include_directories(datachannel-wasm PUBLIC
 target_include_directories(datachannel-wasm PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/wasm/include/rtc)
 
-set(WASM_OPTS
-	"SHELL:-s EXPORTED_RUNTIME_METHODS=[\"dynCall\"]")
+set(WASM_OPTS "")
+
+if(EXPORT_DYNCALL)
+  list(APPEND WASM_OPTS "SHELL:-s EXPORTED_RUNTIME_METHODS=[\"dynCall\"]")
+endif()
 
 target_compile_options(datachannel-wasm PUBLIC ${WASM_OPTS})
 target_link_options(datachannel-wasm PUBLIC ${WASM_OPTS}
 	"SHELL:--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/webrtc.js"
 	"SHELL:--js-library ${CMAKE_CURRENT_SOURCE_DIR}/wasm/js/websocket.js")
-
