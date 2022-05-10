@@ -30,7 +30,7 @@ Since datachannel-wasm is compatible with [libdatachannel](https://github.com/pa
 ```bash
 $ git submodule add https://github.com/paullouisageneau/datachannel-wasm.git deps/datachannel-wasm
 $ git submodule add https://github.com/paullouisageneau/libdatachannel.git deps/libdatachannel
-$ git submodule update --init --recursive
+$ git submodule update --init --recursive --depth 1
 ```
 
 CMakeLists.txt:
@@ -41,7 +41,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 else()
     option(NO_MEDIA "Disable media support in libdatachannel" ON)
     add_subdirectory(deps/libdatachannel EXCLUDE_FROM_ALL)
-    target_link_libraries(YOUR_PROJECT datachannel-static)
+    target_link_libraries(YOUR_PROJECT datachannel)
 endif()
 ```
 
