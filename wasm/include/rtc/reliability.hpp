@@ -19,16 +19,20 @@
 #ifndef RTC_RELIABILITY_H
 #define RTC_RELIABILITY_H
 
+#include "common.hpp"
+
+#include <chrono>
+
 namespace rtc {
-// TODO: Support Type::Timed
+
 struct Reliability {
-	enum class Type { Reliable = 0, Rexmit };
+	enum class Type { Reliable = 0, Rexmit, Timed };
 
 	Type type = Type::Reliable;
 	bool unordered = false;
-	int rexmit = 0;
+	variant<int, std::chrono::milliseconds> rexmit = 0;
 };
 
 } // namespace rtc
 
-#endif // RTC_PEERCONNECTION_H
+#endif // RTC_RELIABILITY_H
