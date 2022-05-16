@@ -221,15 +221,15 @@
 			return type;
 		},
 
-		rtcCreateDataChannel: function(pc, pLabel, unreliable, unordered, rexmit) {
+		rtcCreateDataChannel: function(pc, pLabel, unordered, maxRetransmits, maxPacketLifeTime) {
 			if(!pc) return 0;
 			var label = UTF8ToString(pLabel);
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
-			var datachannelInit = {};
-			if (unordered)
-				datachannelInit['ordered'] = false;
-			if (unreliable)
-				datachannelInit['maxRetransmits'] = rexmit;
+			var datachannelInit = {
+				ordered: !unordered,
+				maxRetransmits: maxRetransmits >= 0 ? maxRetransmits : null,
+				maxPacketLifeTime: maxPacketLifeTime >= 0 ? maxPacketLifeTime : null,
+			};
 			var channel = peerConnection.createDataChannel(label, datachannelInit);
 			return WEBRTC.registerDataChannel(channel);
 		},
