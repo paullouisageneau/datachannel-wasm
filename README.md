@@ -8,7 +8,7 @@ datachannel-wasm exposes the same API as [libdatachannel](https://github.com/pau
 
 These wrappers were originally written for my multiplayer game [Convergence](https://github.com/paullouisageneau/convergence) and were extracted from there to be easily reusable.
 
-datachannel-wasm is licensed under LGPLv2, see [LICENSE](https://github.com/paullouisageneau/datachannel-wasm/blob/master/LICENSE).
+datachannel-wasm is licensed under MIT, see [LICENSE](https://github.com/paullouisageneau/datachannel-wasm/blob/master/LICENSE).
 
 ## Installation
 
@@ -22,10 +22,10 @@ CMakeLists.txt:
 ```cmake
 [...]
 add_subdirectory(deps/datachannel-wasm EXCLUDE_FROM_ALL)
-target_link_libraries(YOUR_PROJECT datachannel-wasm)
+target_link_libraries(YOUR_TARGET datachannel-wasm)
 ```
 
-Since datachannel-wasm is compatible with [libdatachannel](https://github.com/paullouisageneau/libdatachannel), you can easily leverage both to make the same C++ code compile to native (including MacOS and Windows):
+Since datachannel-wasm is compatible with [libdatachannel](https://github.com/paullouisageneau/libdatachannel), you can easily leverage both to make the same C++ code compile to native (including Apple macOS and Microsoft Windows):
 
 ```bash
 $ git submodule add https://github.com/paullouisageneau/datachannel-wasm.git deps/datachannel-wasm
@@ -37,11 +37,11 @@ CMakeLists.txt:
 ```cmake
 if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     add_subdirectory(deps/datachannel-wasm EXCLUDE_FROM_ALL)
-    target_link_libraries(YOUR_PROJECT datachannel-wasm)
+    target_link_libraries(YOUR_TARGET datachannel-wasm)
 else()
     option(NO_MEDIA "Disable media support in libdatachannel" ON)
     add_subdirectory(deps/libdatachannel EXCLUDE_FROM_ALL)
-    target_link_libraries(YOUR_PROJECT datachannel)
+    target_link_libraries(YOUR_TARGET datachannel)
 endif()
 ```
 
