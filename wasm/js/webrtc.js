@@ -231,9 +231,12 @@
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			var datachannelInit = {
 				ordered: !unordered,
-				maxRetransmits: maxRetransmits >= 0 ? maxRetransmits : null,
-				maxPacketLifeTime: maxPacketLifeTime >= 0 ? maxPacketLifeTime : null,
 			};
+
+			// Browsers throw an exception when both are present (even if set to null)
+			if (maxRetransmits >= 0) datachannelInit.maxRetransmits = maxRetransmits;
+			else if (maxPacketLifeTime >= 0) datachannelInit.maxPacketLifeTime = maxPacketLifeTime;
+
 			var channel = peerConnection.createDataChannel(label, datachannelInit);
 			return WEBRTC.registerDataChannel(channel);
 		},
