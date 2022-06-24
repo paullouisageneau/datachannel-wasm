@@ -61,7 +61,7 @@
 			var cb = function() {
 				if(webSocket.rtcUserDeleted) return;
 				var userPointer = webSocket.rtcUserPointer || 0;
-				Module['dynCall']('vi', openCallback, [userPointer]);
+				{{{ makeDynCall('vi', 'openCallback') }}} (userPointer);
 			};
 			webSocket.onopen = cb;
 			if(webSocket.readyState == 1) setTimeout(cb, 0);
@@ -72,7 +72,7 @@
 			var cb = function() {
 				if(webSocket.rtcUserDeleted) return;
 				var userPointer = webSocket.rtcUserPointer || 0;
-				Module['dynCall']('vii', errorCallback, [0, userPointer]);
+        {{{ makeDynCall('vii', 'errorCallback') }}} (0, userPointer);
 			};
 			webSocket.onerror = cb;
 		},
@@ -84,7 +84,7 @@
 				if(typeof evt.data == 'string') {
 					var pStr = WEBSOCKET.allocUTF8FromString(evt.data);
 					var userPointer = webSocket.rtcUserPointer || 0;
-					Module['dynCall']('viii', messageCallback, [pStr, -1, userPointer]);
+					{{{ makeDynCall('viii', 'messageCallback') }}} (pStr, -1, userPointer);
 					_free(pStr);
 				} else {
 					var byteArray = new Uint8Array(evt.data);
@@ -93,14 +93,14 @@
 					var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
 					heapBytes.set(byteArray);
 					var userPointer = webSocket.rtcUserPointer || 0;
-					Module['dynCall']('viii', messageCallback, [pBuffer, size, userPointer]);
+					{{{ makeDynCall('viii', 'messageCallback') }}} (pBuffer, size, userPointer);
 					_free(pBuffer);
 				}
 			};
 			webSocket.onclose = function() {
 				if(webSocket.rtcUserDeleted) return;
 				var userPointer = webSocket.rtcUserPointer || 0;
-				Module['dynCall']('viii', messageCallback, [0, 0, userPointer]);
+				{{{ makeDynCall('viii', 'messageCallback') }}} (0, 0, userPointer);
 			};
 		},
 
