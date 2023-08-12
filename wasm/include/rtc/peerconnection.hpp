@@ -51,6 +51,16 @@ public:
 		Closed = 5
 	};
 
+	enum class IceState : int {
+		New = 0,
+		Checking = 1,
+		Connected = 2,
+		Completed = 3,
+		Failed = 4,
+		Disconnected = 5,
+		Closed = 6
+	};
+
 	enum class GatheringState : int { New = 0, InProgress = 1, Complete = 2 };
 
 	enum class SignalingState : int {
@@ -66,6 +76,7 @@ public:
 	~PeerConnection();
 
 	State state() const;
+	IceState iceState() const;
 	GatheringState gatheringState() const;
 	SignalingState signalingState() const;
 	optional<Description> localDescription() const;
@@ -80,6 +91,7 @@ public:
 	void onLocalDescription(std::function<void(const Description &description)> callback);
 	void onLocalCandidate(std::function<void(const Candidate &candidate)> callback);
 	void onStateChange(std::function<void(State state)> callback);
+	void onIceStateChange(std::function<void(IceState state)> callback);
 	void onGatheringStateChange(std::function<void(GatheringState state)> callback);
 	void onSignalingStateChange(std::function<void(SignalingState state)> callback);
 
@@ -88,19 +100,22 @@ protected:
 	void triggerLocalDescription(const Description &description);
 	void triggerLocalCandidate(const Candidate &candidate);
 	void triggerStateChange(State state);
+	void triggerIceStateChange(IceState state);
 	void triggerGatheringStateChange(GatheringState state);
 	void triggerSignalingStateChange(SignalingState state);
 
 	std::function<void(shared_ptr<DataChannel>)> mDataChannelCallback;
 	std::function<void(const Description &description)> mLocalDescriptionCallback;
 	std::function<void(const Candidate &candidate)> mLocalCandidateCallback;
-	std::function<void(State candidate)> mStateChangeCallback;
-	std::function<void(GatheringState candidate)> mGatheringStateChangeCallback;
-	std::function<void(SignalingState candidate)> mSignalingStateChangeCallback;
+	std::function<void(State state)> mStateChangeCallback;
+	std::function<void(IceState state)> mIceStateChangeCallback;
+	std::function<void(GatheringState state)> mGatheringStateChangeCallback;
+	std::function<void(SignalingState state)> mSignalingStateChangeCallback;
 
 private:
 	int mId;
 	State mState = State::New;
+	IceState mIceState = IceState::New;
 	GatheringState mGatheringState = GatheringState::New;
 	SignalingState mSignalingState = SignalingState::Stable;
 
@@ -108,6 +123,7 @@ private:
 	static void DescriptionCallback(const char *sdp, const char *type, void *ptr);
 	static void CandidateCallback(const char *candidate, const char *mid, void *ptr);
 	static void StateChangeCallback(int state, void *ptr);
+	static void IceStateChangeCallback(int state, void *ptr);
 	static void GatheringStateChangeCallback(int state, void *ptr);
 	static void SignalingStateChangeCallback(int state, void *ptr);
 };

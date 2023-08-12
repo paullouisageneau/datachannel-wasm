@@ -45,6 +45,7 @@ extern void rtcSetLocalDescriptionCallback(int pc,
 extern void rtcSetLocalCandidateCallback(int pc, void (*candidateCallback)(const char *,
                                                                            const char *, void *));
 extern void rtcSetStateChangeCallback(int pc, void (*stateChangeCallback)(int, void *));
+extern void rtcSetIceStateChangeCallback(int pc, void (*iceStateChangeCallback)(int, void *));
 extern void rtcSetGatheringStateChangeCallback(int pc,
                                                void (*gatheringStateChangeCallback)(int, void *));
 extern void rtcSetSignalingStateChangeCallback(int pc,
@@ -81,6 +82,12 @@ void PeerConnection::StateChangeCallback(int state, void *ptr) {
 	PeerConnection *p = static_cast<PeerConnection *>(ptr);
 	if (p)
 		p->triggerStateChange(static_cast<State>(state));
+}
+
+void PeerConnection::IceStateChangeCallback(int state, void *ptr) {
+	PeerConnection *p = static_cast<PeerConnection *>(ptr);
+	if (p)
+		p->triggerIceStateChange(static_cast<IceState>(state));
 }
 
 void PeerConnection::GatheringStateChangeCallback(int state, void *ptr) {
@@ -142,6 +149,7 @@ PeerConnection::PeerConnection(const Configuration &config) {
 	rtcSetLocalDescriptionCallback(mId, DescriptionCallback);
 	rtcSetLocalCandidateCallback(mId, CandidateCallback);
 	rtcSetStateChangeCallback(mId, StateChangeCallback);
+	rtcSetIceStateChangeCallback(mId, IceStateChangeCallback);
 	rtcSetGatheringStateChangeCallback(mId, GatheringStateChangeCallback);
 	rtcSetSignalingStateChangeCallback(mId, SignalingStateChangeCallback);
 }
@@ -149,6 +157,8 @@ PeerConnection::PeerConnection(const Configuration &config) {
 PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
 
 PeerConnection::State PeerConnection::state() const { return mState; }
+
+PeerConnection::IceState PeerConnection::iceState() const { return mIceState; }
 
 PeerConnection::GatheringState PeerConnection::gatheringState() const { return mGatheringState; }
 
@@ -219,6 +229,10 @@ void PeerConnection::onStateChange(function<void(State state)> callback) {
 	mStateChangeCallback = callback;
 }
 
+void PeerConnection::onIceStateChange(function<void(IceState state)> callback) {
+	mIceStateChangeCallback = callback;
+}
+
 void PeerConnection::onGatheringStateChange(function<void(GatheringState state)> callback) {
 	mGatheringStateChangeCallback = callback;
 }
@@ -246,6 +260,12 @@ void PeerConnection::triggerStateChange(State state) {
 	mState = state;
 	if (mStateChangeCallback)
 		mStateChangeCallback(state);
+}
+
+void PeerConnection::triggerIceStateChange(IceState state) {
+	mIceState = state;
+	if (mIceStateChangeCallback)
+		mIceStateChangeCallback(state);
 }
 
 void PeerConnection::triggerGatheringStateChange(GatheringState state) {
