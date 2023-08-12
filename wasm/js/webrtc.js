@@ -53,6 +53,9 @@
 				peerConnection.onconnectionstatechange = function() {
 					WEBRTC.handleConnectionStateChange(peerConnection, peerConnection.connectionState)
 				};
+				peerConnection.oniceconnectionstatechange = function() {
+					WEBRTC.handleIceStateChange(peerConnection, peerConnection.iceConnectionState)
+				};
 				peerConnection.onicegatheringstatechange = function() {
 					WEBRTC.handleGatheringStateChange(peerConnection, peerConnection.iceGatheringState)
 				};
@@ -112,6 +115,25 @@
 					var stateChangeCallback = peerConnection.rtcStateChangeCallback;
 					var userPointer = peerConnection.rtcUserPointer || 0;
 					{{{ makeDynCall('vii', 'stateChangeCallback') }}} (map[connectionState], userPointer);
+				}
+			},
+
+      handleIceStateChange: function(peerConnection, iceConnectionState) {
+				if(peerConnection.rtcUserDeleted) return;
+				if(!peerConnection.rtcIceStateChangeCallback) return;
+				var map = {
+					'new': 0,
+					'checking': 1,
+					'connected': 2,
+					'completed': 3,
+					'failed': 4,
+					'disconnected': 5,
+					'closed': 6,
+				};
+				if(iceConnectionState in map) {
+					var iceStateChangeCallback = peerConnection.rtcIceStateChangeCallback;
+					var userPointer = peerConnection.rtcUserPointer || 0;
+					{{{ makeDynCall('vii', 'iceStateChangeCallback') }}} (map[iceConnectionState], userPointer);
 				}
 			},
 
@@ -276,6 +298,12 @@
 			if(!pc) return;
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			peerConnection.rtcStateChangeCallback = stateChangeCallback;
+		},
+
+    rtcSetIceStateChangeCallback: function(pc, iceStateChangeCallback) {
+			if(!pc) return;
+			var peerConnection = WEBRTC.peerConnectionsMap[pc];
+			peerConnection.rtcIceStateChangeCallback = iceStateChangeCallback;
 		},
 
 		rtcSetGatheringStateChangeCallback: function(pc, gatheringStateChangeCallback) {
