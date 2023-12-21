@@ -202,6 +202,7 @@
 		rtcDeletePeerConnection: function(pc) {
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			if(peerConnection) {
+				peerConnection.close();
 				peerConnection.rtcUserDeleted = true;
 				delete WEBRTC.peerConnectionsMap[pc];
 			}
