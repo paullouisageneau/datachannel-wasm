@@ -109,7 +109,13 @@
 			if(webSocket.readyState != 1) return -1;
 			if(size >= 0) {
 				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
-				webSocket.send(heapBytes);
+				if(heapBytes.buffer instanceof ArrayBuffer) {
+					webSocket.send(heapBytes);
+				} else {
+					var byteArray = new Uint8Array(new ArrayBuffer(size));
+					byteArray.set(heapBytes);
+					webSocket.send(byteArray);
+				}
 				return size;
 			} else {
 				var str = UTF8ToString(pBuffer);
