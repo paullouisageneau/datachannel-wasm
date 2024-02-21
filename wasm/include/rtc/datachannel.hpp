@@ -25,6 +25,7 @@
 
 #include "channel.hpp"
 #include "common.hpp"
+#include "reliability.hpp"
 
 namespace rtc {
 
@@ -41,6 +42,7 @@ public:
 	bool isClosed() const override;
 	size_t bufferedAmount() const override;
 	string label() const;
+	Reliability reliability() const;
 
 	void setBufferedAmountLowThreshold(size_t amount) override;
 
