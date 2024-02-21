@@ -24,6 +24,7 @@
 #define RTC_INCLUDE_H
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <stdexcept>
