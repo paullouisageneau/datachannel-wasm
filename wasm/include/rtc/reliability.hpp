@@ -30,11 +30,18 @@
 namespace rtc {
 
 struct Reliability {
-	enum class Type { Reliable = 0, Rexmit, Timed };
-
-	Type type = Type::Reliable;
+	// It true, the channel does not enforce message ordering and out-of-order delivery is allowed
 	bool unordered = false;
-	variant<int, std::chrono::milliseconds> rexmit = 0;
+
+	// If both maxPacketLifeTime or maxRetransmits are unset, the channel is reliable.
+	// If either maxPacketLifeTime or maxRetransmits is set, the channel is unreliable.
+	// (The settings are exclusive so both maxPacketLifetime and maxRetransmits must not be set.)
+
+	// Time window during which transmissions and retransmissions may occur
+	optional<std::chrono::milliseconds> maxPacketLifeTime;
+
+	// Maximum number of retransmissions that are attempted
+	optional<unsigned int> maxRetransmits;
 };
 
 } // namespace rtc
