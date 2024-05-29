@@ -194,13 +194,14 @@ optional<Description> PeerConnection::remoteDescription() const {
 
 shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label,
                                                           DataChannelInit init) {
-	int maxRetransmits = init.reliability.type == Reliability::Type::Rexmit
-	                         ? std::get<int>(init.reliability.rexmit)
-	                         : -1;
+	const Reliability &reliability = init.reliability;
+	if (reliability.maxPacketLifeTime && reliability.maxRetransmits)
+		throw std::invalid_argument("Both maxPacketLifeTime and maxRetransmits are set");
+
+	int maxRetransmits = reliability.maxRetransmits ? int(*reliability.maxRetransmits) : -1;
 	int maxPacketLifeTime =
-	    init.reliability.type == Reliability::Type::Timed
-	        ? int(std::get<std::chrono::milliseconds>(init.reliability.rexmit).count())
-	        : -1;
+	    reliability.maxPacketLifeTime ? int(reliability.maxPacketLifeTime->count()) : -1;
+
 	return std::make_shared<DataChannel>(rtcCreateDataChannel(
 	    mId, label.c_str(), init.reliability.unordered, maxRetransmits, maxPacketLifeTime));
 }
