@@ -51,7 +51,7 @@
 			var webSocket = WEBSOCKET.map[ws];
 			if(webSocket) {
 				webSocket.close();
-				webSocket.wsUserDeleted = true;
+				webSocket.rtcUserDeleted = true;
 				delete WEBSOCKET.map[ws];
 			}
 		},
