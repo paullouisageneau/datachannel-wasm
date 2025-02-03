@@ -31,6 +31,13 @@ namespace rtc {
 // WebSocket wrapper for emscripten
 class WebSocket final : public Channel {
 public:
+	enum class State : int {
+		Connecting = 0,
+		Open = 1,
+		Closing = 2,
+		Closed = 3,
+	};
+
 	WebSocket();
 	~WebSocket();
 
@@ -39,8 +46,12 @@ public:
 	bool send(message_variant data) override;
 	bool send(const byte *data, size_t size) override;
 
+	State readyState() const;
+
 	bool isOpen() const override;
 	bool isClosed() const override;
+
+	optional<string> url() const;
 
 private:
 	void triggerOpen() override;
@@ -52,6 +63,8 @@ private:
 	static void ErrorCallback(const char *error, void *ptr);
 	static void MessageCallback(const char *data, int size, void *ptr);
 };
+
+std::ostream &operator<<(std::ostream &out, WebSocket::State state);
 
 } // namespace rtc
 
