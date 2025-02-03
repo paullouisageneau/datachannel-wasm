@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2022 Paul-Louis Ageneau
+ * Copyright (c) 2017-2024 Paul-Louis Ageneau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,36 @@
  * SOFTWARE.
  */
 
-#ifndef RTC_H
-#define RTC_H
+#ifndef RTC_GLOBAL_H
+#define RTC_GLOBAL_H
 
 #include "common.hpp"
-#include "global.hpp"
 
-#include "datachannel.hpp"
-#include "peerconnection.hpp"
-#include "websocket.hpp"
+#include <future>
+#include <iostream>
 
-#endif // RTC_H
+namespace rtc {
+
+enum class LogLevel {
+	None = 0,
+	Fatal = 1,
+	Error = 2,
+	Warning = 3,
+	Info = 4,
+	Debug = 5,
+	Verbose = 6
+};
+
+typedef std::function<void(LogLevel level, string message)> LogCallback;
+
+// Dummy function for compatibility with libdatachannel
+void InitLogger(LogLevel level, LogCallback callback = nullptr);
+void Preload();
+std::shared_future<void> Cleanup();
+
+std::ostream &operator<<(std::ostream &out, LogLevel level);
+
+} // namespace rtc
+
+#endif
+
