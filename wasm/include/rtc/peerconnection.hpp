@@ -75,6 +75,8 @@ public:
 	PeerConnection(const Configuration &config);
 	~PeerConnection();
 
+	void close();
+
 	State state() const;
 	IceState iceState() const;
 	GatheringState gatheringState() const;

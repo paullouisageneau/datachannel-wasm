@@ -154,7 +154,14 @@ PeerConnection::PeerConnection(const Configuration &config) {
 	rtcSetSignalingStateChangeCallback(mId, SignalingStateChangeCallback);
 }
 
-PeerConnection::~PeerConnection() { rtcDeletePeerConnection(mId); }
+PeerConnection::~PeerConnection() { close(); }
+
+void DataChannel::close() {
+	if (mId) {
+		rtcDeletePeerConnection(mId);
+		mId = 0;
+	}
+}
 
 PeerConnection::State PeerConnection::state() const { return mState; }
 
@@ -165,6 +172,9 @@ PeerConnection::GatheringState PeerConnection::gatheringState() const { return m
 PeerConnection::SignalingState PeerConnection::signalingState() const { return mSignalingState; }
 
 optional<Description> PeerConnection::localDescription() const {
+	if (!mId)
+		return std::nullopt;
+
 	char *sdp = rtcGetLocalDescription(mId);
 	char *type = rtcGetLocalDescriptionType(mId);
 	if (!sdp || !type) {
@@ -179,6 +189,9 @@ optional<Description> PeerConnection::localDescription() const {
 }
 
 optional<Description> PeerConnection::remoteDescription() const {
+	if (!mId)
+		return std::nullopt;
+
 	char *sdp = rtcGetRemoteDescription(mId);
 	char *type = rtcGetRemoteDescriptionType(mId);
 	if (!sdp || !type) {
@@ -194,6 +207,9 @@ optional<Description> PeerConnection::remoteDescription() const {
 
 shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label,
                                                           DataChannelInit init) {
+	if (!mId)
+		throw std::runtime_error("Peer connection is closed");
+
 	const Reliability &reliability = init.reliability;
 	if (reliability.maxPacketLifeTime && reliability.maxRetransmits)
 		throw std::invalid_argument("Both maxPacketLifeTime and maxRetransmits are set");
@@ -207,10 +223,16 @@ shared_ptr<DataChannel> PeerConnection::createDataChannel(const string &label,
 }
 
 void PeerConnection::setRemoteDescription(const Description &description) {
+	if (!mId)
+		throw std::runtime_error("Peer connection is closed");
+
 	rtcSetRemoteDescription(mId, string(description).c_str(), description.typeString().c_str());
 }
 
 void PeerConnection::addRemoteCandidate(const Candidate &candidate) {
+	if (!mId)
+		throw std::runtime_error("Peer connection is closed");
+
 	rtcAddRemoteCandidate(mId, candidate.candidate().c_str(), candidate.mid().c_str());
 }
 

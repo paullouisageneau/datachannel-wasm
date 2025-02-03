@@ -444,7 +444,7 @@
 		},
 
 		rtcGetBufferedAmount: function(dc) {
-			if(!dc) return;
+			if(!dc) return 0;
 			var dataChannel = WEBRTC.dataChannelsMap[dc];
 			return dataChannel.bufferedAmount;
 		},
@@ -456,7 +456,7 @@
 		},
 
 		rtcSendMessage: function(dc, pBuffer, size) {
-			if(!dc) return;
+			if(!dc) return -1;
 			var dataChannel = WEBRTC.dataChannelsMap[dc];
 			if(dataChannel.readyState != 'open') return -1;
 			if(size >= 0) {
