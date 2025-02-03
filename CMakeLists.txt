@@ -15,6 +15,7 @@ set(DATACHANNELS_SRC
 	${WASM_SRC_DIR}/configuration.cpp
 	${WASM_SRC_DIR}/description.cpp
 	${WASM_SRC_DIR}/datachannel.cpp
+	${WASM_SRC_DIR}/global.cpp
 	${WASM_SRC_DIR}/peerconnection.cpp
 	${WASM_SRC_DIR}/websocket.cpp)
 

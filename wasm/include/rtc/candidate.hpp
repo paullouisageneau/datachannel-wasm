@@ -25,8 +25,6 @@
 
 #include "common.hpp"
 
-#include <iostream>
-
 namespace rtc {
 
 class Candidate {

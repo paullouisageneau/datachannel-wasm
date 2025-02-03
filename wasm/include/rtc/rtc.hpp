@@ -24,17 +24,10 @@
 #define RTC_H
 
 #include "common.hpp"
+#include "global.hpp"
 
 #include "datachannel.hpp"
 #include "peerconnection.hpp"
 #include "websocket.hpp"
-
-namespace rtc {
-
-// Dummy functions
-inline void Preload() {}
-inline void Cleanup() {}
-
-} // namespace rtc
 
 #endif // RTC_H

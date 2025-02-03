@@ -75,6 +75,8 @@ public:
 	PeerConnection(const Configuration &config);
 	~PeerConnection();
 
+	void close();
+
 	State state() const;
 	IceState iceState() const;
 	GatheringState gatheringState() const;
@@ -127,6 +129,11 @@ private:
 	static void GatheringStateChangeCallback(int state, void *ptr);
 	static void SignalingStateChangeCallback(int state, void *ptr);
 };
+
+std::ostream &operator<<(std::ostream &out, PeerConnection::State state);
+std::ostream &operator<<(std::ostream &out, PeerConnection::IceState state);
+std::ostream &operator<<(std::ostream &out, PeerConnection::GatheringState state);
+std::ostream &operator<<(std::ostream &out, PeerConnection::SignalingState state);
 
 } // namespace rtc
 

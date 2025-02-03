@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2022 Paul-Louis Ageneau
+ * Copyright (c) 2017-2024 Paul-Louis Ageneau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,52 +20,36 @@
  * SOFTWARE.
  */
 
-#ifndef RTC_WEBSOCKET_H
-#define RTC_WEBSOCKET_H
+#ifndef RTC_GLOBAL_H
+#define RTC_GLOBAL_H
 
-#include "channel.hpp"
 #include "common.hpp"
+
+#include <future>
+#include <iostream>
 
 namespace rtc {
 
-// WebSocket wrapper for emscripten
-class WebSocket final : public Channel {
-public:
-	enum class State : int {
-		Connecting = 0,
-		Open = 1,
-		Closing = 2,
-		Closed = 3,
-	};
-
-	WebSocket();
-	~WebSocket();
-
-	void open(const string &url);
-	void close() override;
-	bool send(message_variant data) override;
-	bool send(const byte *data, size_t size) override;
-
-	State readyState() const;
-
-	bool isOpen() const override;
-	bool isClosed() const override;
-
-	optional<string> url() const;
-
-private:
-	void triggerOpen() override;
-
-	int mId;
-	bool mConnected;
-
-	static void OpenCallback(void *ptr);
-	static void ErrorCallback(const char *error, void *ptr);
-	static void MessageCallback(const char *data, int size, void *ptr);
+enum class LogLevel {
+	None = 0,
+	Fatal = 1,
+	Error = 2,
+	Warning = 3,
+	Info = 4,
+	Debug = 5,
+	Verbose = 6
 };
 
-std::ostream &operator<<(std::ostream &out, WebSocket::State state);
+typedef std::function<void(LogLevel level, string message)> LogCallback;
+
+// Dummy function for compatibility with libdatachannel
+void InitLogger(LogLevel level, LogCallback callback = nullptr);
+void Preload();
+std::shared_future<void> Cleanup();
+
+std::ostream &operator<<(std::ostream &out, LogLevel level);
 
 } // namespace rtc
 
-#endif // RTC_WEBSOCKET_H
+#endif
+

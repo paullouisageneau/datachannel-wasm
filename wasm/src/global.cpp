@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-2022 Paul-Louis Ageneau
+ * Copyright (c) 2017-2024 Paul-Louis Ageneau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,52 +20,50 @@
  * SOFTWARE.
  */
 
-#ifndef RTC_WEBSOCKET_H
-#define RTC_WEBSOCKET_H
-
-#include "channel.hpp"
-#include "common.hpp"
+#include "global.hpp"
 
 namespace rtc {
 
-// WebSocket wrapper for emscripten
-class WebSocket final : public Channel {
-public:
-	enum class State : int {
-		Connecting = 0,
-		Open = 1,
-		Closing = 2,
-		Closed = 3,
-	};
+void InitLogger([[maybe_unused]] LogLevel level, [[maybe_unused]] LogCallback callback) {
+	// Dummy
+}
 
-	WebSocket();
-	~WebSocket();
+void Preload() {
+	// Dummy
+}
 
-	void open(const string &url);
-	void close() override;
-	bool send(message_variant data) override;
-	bool send(const byte *data, size_t size) override;
+std::shared_future<void> Cleanup() {
+	// Dummy
+	std::promise<void> p;
+	p.set_value();
+	return p.get_future();
+}
 
-	State readyState() const;
-
-	bool isOpen() const override;
-	bool isClosed() const override;
-
-	optional<string> url() const;
-
-private:
-	void triggerOpen() override;
-
-	int mId;
-	bool mConnected;
-
-	static void OpenCallback(void *ptr);
-	static void ErrorCallback(const char *error, void *ptr);
-	static void MessageCallback(const char *data, int size, void *ptr);
-};
-
-std::ostream &operator<<(std::ostream &out, WebSocket::State state);
+std::ostream &operator<<(std::ostream &out, LogLevel level) {
+	switch (level) {
+	case LogLevel::Fatal:
+		out << "fatal";
+		break;
+	case LogLevel::Error:
+		out << "error";
+		break;
+	case LogLevel::Warning:
+		out << "warning";
+		break;
+	case LogLevel::Info:
+		out << "info";
+		break;
+	case LogLevel::Debug:
+		out << "debug";
+		break;
+	case LogLevel::Verbose:
+		out << "verbose";
+		break;
+	default:
+		out << "none";
+		break;
+	}
+	return out;
+}
 
 } // namespace rtc
-
-#endif // RTC_WEBSOCKET_H
