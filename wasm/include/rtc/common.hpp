@@ -20,11 +20,12 @@
  * SOFTWARE.
  */
 
-#ifndef RTC_INCLUDE_H
-#define RTC_INCLUDE_H
+#ifndef RTC_COMMON_H
+#define RTC_COMMON_H
 
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -52,9 +53,11 @@ using std::uint32_t;
 using std::uint64_t;
 using std::uint8_t;
 
-template <class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+template <class... Ts> struct overloaded : Ts... {
+	using Ts::operator()...;
+};
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 } // namespace rtc
 
-#endif // RTC_INCLUDE_H
+#endif // RTC_COMMON_H

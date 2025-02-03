@@ -302,4 +302,112 @@ void PeerConnection::triggerSignalingStateChange(SignalingState state) {
 	if (mSignalingStateChangeCallback)
 		mSignalingStateChangeCallback(state);
 }
+
+std::ostream &operator<<(std::ostream &out, PeerConnection::State state) {
+	using State = PeerConnection::State;
+	const char *str;
+	switch (state) {
+	case State::New:
+		str = "new";
+		break;
+	case State::Connecting:
+		str = "connecting";
+		break;
+	case State::Connected:
+		str = "connected";
+		break;
+	case State::Disconnected:
+		str = "disconnected";
+		break;
+	case State::Failed:
+		str = "failed";
+		break;
+	case State::Closed:
+		str = "closed";
+		break;
+	default:
+		str = "unknown";
+		break;
+	}
+	return out << str;
+}
+
+std::ostream &operator<<(std::ostream &out, PeerConnection::IceState state) {
+	using IceState = PeerConnection::IceState;
+	const char *str;
+	switch (state) {
+	case IceState::New:
+		str = "new";
+		break;
+	case IceState::Checking:
+		str = "checking";
+		break;
+	case IceState::Connected:
+		str = "connected";
+		break;
+	case IceState::Completed:
+		str = "completed";
+		break;
+	case IceState::Failed:
+		str = "failed";
+		break;
+	case IceState::Disconnected:
+		str = "disconnected";
+		break;
+	case IceState::Closed:
+		str = "closed";
+		break;
+	default:
+		str = "unknown";
+		break;
+	}
+	return out << str;
+}
+
+std::ostream &operator<<(std::ostream &out, PeerConnection::GatheringState state) {
+	using GatheringState = PeerConnection::GatheringState;
+	const char *str;
+	switch (state) {
+	case GatheringState::New:
+		str = "new";
+		break;
+	case GatheringState::InProgress:
+		str = "in-progress";
+		break;
+	case GatheringState::Complete:
+		str = "complete";
+		break;
+	default:
+		str = "unknown";
+		break;
+	}
+	return out << str;
+}
+
+std::ostream &operator<<(std::ostream &out, PeerConnection::SignalingState state) {
+	using SignalingState = PeerConnection::SignalingState;
+	const char *str;
+	switch (state) {
+	case SignalingState::Stable:
+		str = "stable";
+		break;
+	case SignalingState::HaveLocalOffer:
+		str = "have-local-offer";
+		break;
+	case SignalingState::HaveRemoteOffer:
+		str = "have-remote-offer";
+		break;
+	case SignalingState::HaveLocalPranswer:
+		str = "have-local-pranswer";
+		break;
+	case SignalingState::HaveRemotePranswer:
+		str = "have-remote-pranswer";
+		break;
+	default:
+		str = "unknown";
+		break;
+	}
+	return out << str;
+}
+
 } // namespace rtc

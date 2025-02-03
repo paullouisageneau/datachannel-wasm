@@ -130,6 +130,11 @@ private:
 	static void SignalingStateChangeCallback(int state, void *ptr);
 };
 
+std::ostream &operator<<(std::ostream &out, PeerConnection::State state);
+std::ostream &operator<<(std::ostream &out, PeerConnection::IceState state);
+std::ostream &operator<<(std::ostream &out, PeerConnection::GatheringState state);
+std::ostream &operator<<(std::ostream &out, PeerConnection::SignalingState state);
+
 } // namespace rtc
 
 #endif // RTC_PEERCONNECTION_H
