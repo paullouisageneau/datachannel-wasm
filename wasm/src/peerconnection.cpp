@@ -156,7 +156,7 @@ PeerConnection::PeerConnection(const Configuration &config) {
 
 PeerConnection::~PeerConnection() { close(); }
 
-void DataChannel::close() {
+void PeerConnection::close() {
 	if (mId) {
 		rtcDeletePeerConnection(mId);
 		mId = 0;
