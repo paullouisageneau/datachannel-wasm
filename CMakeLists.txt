@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(datachannel-wasm
 	DESCRIPTION "C++ WebRTC Data Channels for WebAssembly in browsers"
-	VERSION 0.3.1
+	VERSION 0.3.2
 	LANGUAGES CXX)
 
 if(NOT CMAKE_SYSTEM_NAME MATCHES "Emscripten")
