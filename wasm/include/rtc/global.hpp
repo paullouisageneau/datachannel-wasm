@@ -25,6 +25,7 @@
 
 #include "common.hpp"
 
+#include <functional>
 #include <future>
 #include <iostream>
 
@@ -52,4 +53,3 @@ std::ostream &operator<<(std::ostream &out, LogLevel level);
 } // namespace rtc
 
 #endif
-
