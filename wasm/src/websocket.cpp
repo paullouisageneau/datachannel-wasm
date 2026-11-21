@@ -24,6 +24,7 @@
 
 #include <emscripten/emscripten.h>
 
+#include <cstdlib>
 #include <exception>
 #include <memory>
 
