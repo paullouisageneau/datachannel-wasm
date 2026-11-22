@@ -47,7 +47,7 @@ endif()
 
 ## Building
 
-Building requires that you have [emsdk](https://github.com/emscripten-core/emsdk) installed and activated in your environment:
+Building requires that you have [emsdk](https://github.com/emscripten-core/emsdk) installed and activated in your environment, with Emscripten 3.1.35 or later:
 ```bash
 $ cmake -B build -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
 $ cd build

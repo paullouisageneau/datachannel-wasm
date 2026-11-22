@@ -22,16 +22,10 @@
 
 (function() {
 	var WebSocket = {
+		$WEBSOCKET__deps: ['malloc', 'free', '$UTF8ToString', '$lengthBytesUTF8', '$stringToNewUTF8'],
 		$WEBSOCKET: {
 			map: {},
 			nextId: 1,
-
-			allocUTF8FromString: function(str) {
-				var strLen = lengthBytesUTF8(str);
-				var strOnHeap = _malloc(strLen+1);
-				stringToUTF8(str, strOnHeap, strLen+1);
-				return strOnHeap;
-			},
 
 			registerWebSocket: function(webSocket) {
 				var ws = WEBSOCKET.nextId++;
@@ -85,7 +79,7 @@
 			webSocket.onmessage = function(evt) {
 				if(webSocket.rtcUserDeleted) return;
 				if(typeof evt.data == 'string') {
-					var pStr = WEBSOCKET.allocUTF8FromString(evt.data);
+					var pStr = stringToNewUTF8(evt.data);
 					var userPointer = webSocket.rtcUserPointer || 0;
 					{{{ makeDynCall('viii', 'messageCallback') }}} (pStr, -1, userPointer);
 					_free(pStr);
@@ -93,8 +87,7 @@
 					var byteArray = new Uint8Array(evt.data);
 					var size = byteArray.byteLength;
 					var pBuffer = _malloc(size);
-					var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
-					heapBytes.set(byteArray);
+					HEAPU8.set(byteArray, pBuffer);
 					var userPointer = webSocket.rtcUserPointer || 0;
 					{{{ makeDynCall('viii', 'messageCallback') }}} (pBuffer, size, userPointer);
 					_free(pBuffer);
@@ -112,7 +105,7 @@
 			var webSocket = WEBSOCKET.map[ws];
 			if(webSocket.readyState != 1) return -1;
 			if(size >= 0) {
-				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
+				var heapBytes = HEAPU8.subarray(pBuffer, pBuffer + size);
 				if(heapBytes.buffer instanceof ArrayBuffer) {
 					webSocket.send(heapBytes);
 				} else {
@@ -131,7 +124,7 @@
 		wsGetWebSocketUrl: function(ws) {
 			if(!ws) return 0;
 			var webSocket = WEBSOCKET.map[ws];
-			var url = WEBRTC.allocUTF8FromString(webSocket.url);
+			var url = stringToNewUTF8(webSocket.url);
 			// url should be freed later in c++.
 			return url;
 		},

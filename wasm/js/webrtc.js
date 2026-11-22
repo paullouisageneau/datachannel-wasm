@@ -22,17 +22,11 @@
 
 (function() {
 	var WebRTC = {
+		$WEBRTC__deps: ['malloc', 'free', '$UTF8ToString', '$stringToUTF8', '$lengthBytesUTF8', '$stringToNewUTF8'],
 		$WEBRTC: {
 			peerConnectionsMap: {},
 			dataChannelsMap: {},
 			nextId: 1,
-
-			allocUTF8FromString: function(str) {
-				var strLen = lengthBytesUTF8(str);
-				var strOnHeap = _malloc(strLen+1);
-				stringToUTF8(str, strOnHeap, strLen+1);
-				return strOnHeap;
-			},
 
 			registerPeerConnection: function(peerConnection) {
 				var pc = WEBRTC.nextId++;
@@ -78,8 +72,8 @@
 						if(peerConnection.rtcUserDeleted) return;
 						if(!peerConnection.rtcDescriptionCallback) return;
 						var desc = peerConnection.localDescription;
-						var pSdp = WEBRTC.allocUTF8FromString(desc.sdp);
-						var pType = WEBRTC.allocUTF8FromString(desc.type);
+						var pSdp = stringToNewUTF8(desc.sdp);
+						var pType = stringToNewUTF8(desc.type);
 						var callback =  peerConnection.rtcDescriptionCallback;
 						var userPointer = peerConnection.rtcUserPointer || 0;
 						{{{ makeDynCall('viii', 'callback') }}} (pSdp, pType, userPointer);
@@ -91,8 +85,8 @@
 			handleCandidate: function(peerConnection, candidate) {
 				if(peerConnection.rtcUserDeleted) return;
 				if(!peerConnection.rtcCandidateCallback) return;
-				var pCandidate = WEBRTC.allocUTF8FromString(candidate.candidate);
-				var pSdpMid = WEBRTC.allocUTF8FromString(candidate.sdpMid);
+				var pCandidate = stringToNewUTF8(candidate.candidate);
+				var pSdpMid = stringToNewUTF8(candidate.sdpMid);
 				var candidateCallback =  peerConnection.rtcCandidateCallback;
 				var userPointer = peerConnection.rtcUserPointer || 0;
 				{{{ makeDynCall('viii', 'candidateCallback') }}} (pCandidate, pSdpMid, userPointer);
@@ -174,13 +168,9 @@
 			if(!window.RTCPeerConnection) return 0;
 			var iceServers = [];
 			for(var i = 0; i < nIceServers; ++i) {
-				var heap = Module['HEAPU32'];
-				var pUrl = heap[pUrls/heap.BYTES_PER_ELEMENT + i];
-				var url = UTF8ToString(pUrl);
-				var pUsername = heap[pUsernames/heap.BYTES_PER_ELEMENT + i];
-				var username = UTF8ToString(pUsername);
-				var pPassword = heap[pPasswords/heap.BYTES_PER_ELEMENT + i];
-				var password = UTF8ToString(pPassword);
+				var url = UTF8ToString(HEAPU32[(pUrls >> 2) + i]);
+				var username = UTF8ToString(HEAPU32[(pUsernames >> 2) + i]);
+				var password = UTF8ToString(HEAPU32[(pPasswords >> 2) + i]);
 				if (username == "") {
 					iceServers.push({
 						urls: [url],
@@ -213,7 +203,7 @@
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			var localDescription = peerConnection.localDescription;
 			if(!localDescription) return 0;
-			var sdp = WEBRTC.allocUTF8FromString(localDescription.sdp);
+			var sdp = stringToNewUTF8(localDescription.sdp);
 			// sdp should be freed later in c++.
 			return sdp;
 		},
@@ -223,7 +213,7 @@
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			var localDescription = peerConnection.localDescription;
 			if(!localDescription) return 0;
-			var type = WEBRTC.allocUTF8FromString(localDescription.type);
+			var type = stringToNewUTF8(localDescription.type);
 			// type should be freed later in c++.
 			return type;
 		},
@@ -233,7 +223,7 @@
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			var remoteDescription = peerConnection.remoteDescription;
 			if(!remoteDescription) return 0;
-			var sdp = WEBRTC.allocUTF8FromString(remoteDescription.sdp);
+			var sdp = stringToNewUTF8(remoteDescription.sdp);
 			// sdp should be freed later in c++.
 			return sdp;
 		},
@@ -243,7 +233,7 @@
 			var peerConnection = WEBRTC.peerConnectionsMap[pc];
 			var remoteDescription = peerConnection.remoteDescription;
 			if(!remoteDescription) return 0;
-			var type = WEBRTC.allocUTF8FromString(remoteDescription.type);
+			var type = stringToNewUTF8(remoteDescription.type);
 			// type should be freed later in c++.
 			return type;
 		},
@@ -404,7 +394,7 @@
 			var cb = function(evt) {
 				if(dataChannel.rtcUserDeleted) return;
 				var userPointer = dataChannel.rtcUserPointer || 0;
-				var pError = evt.message ? WEBRTC.allocUTF8FromString(evt.message) : 0;
+				var pError = evt.message ? stringToNewUTF8(evt.message) : 0;
 				{{{ makeDynCall('vii', 'errorCallback') }}} (pError, userPointer);
 				_free(pError);
 			};
@@ -418,15 +408,14 @@
 				if(dataChannel.rtcUserDeleted) return;
 				var userPointer = dataChannel.rtcUserPointer || 0;
 				if(typeof evt.data == 'string') {
-					var pStr = WEBRTC.allocUTF8FromString(evt.data);
+					var pStr = stringToNewUTF8(evt.data);
 					{{{ makeDynCall('viii', 'messageCallback') }}} (pStr, -1, userPointer);
 					_free(pStr);
 				} else {
 					var byteArray = new Uint8Array(evt.data);
 					var size = byteArray.length;
 					var pBuffer = _malloc(size);
-					var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
-					heapBytes.set(byteArray);
+					HEAPU8.set(byteArray, pBuffer);
 					{{{ makeDynCall('viii', 'messageCallback') }}} (pBuffer, size, userPointer);
 					_free(pBuffer);
 				}
@@ -466,7 +455,7 @@
 			var dataChannel = WEBRTC.dataChannelsMap[dc];
 			if(dataChannel.readyState != 'open') return -1;
 			if(size >= 0) {
-				var heapBytes = new Uint8Array(Module['HEAPU8'].buffer, pBuffer, size);
+				var heapBytes = HEAPU8.subarray(pBuffer, pBuffer + size);
 				if(heapBytes.buffer instanceof ArrayBuffer) {
 					dataChannel.send(heapBytes);
 				} else {
